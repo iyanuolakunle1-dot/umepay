@@ -72,23 +72,23 @@ export default function Dashboard() {
         {/* Top Universal Card & Action Options */}
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6 items-stretch">
           {/* Main Navy Universal Card */}
-          <div className="relative rounded-3xl bg-[#18224b] text-white p-6 sm:p-7 shadow-popover overflow-visible flex flex-col justify-between">
+          <div className="relative rounded-3xl bg-[#18224b] text-white p-5 sm:p-7 shadow-popover overflow-visible flex flex-col justify-between">
             <div>
               {/* Header with verified badge and context menu */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+              <div className="flex items-center justify-between mb-3.5 sm:mb-4">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-300">
                   Universal Financial ID
                 </span>
                 <div className="flex items-center gap-2 relative">
                   {user.kycVerified ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400">
+                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-amber-400">
                       ✓ VERIFIED
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={() => navigate('/onboarding/kyc')}
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-300 hover:text-amber-200 underline transition-colors"
+                      className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-amber-300 hover:text-amber-200 underline transition-colors"
                     >
                       ⚠️ VERIFY KYC
                     </button>
@@ -99,7 +99,7 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setOptionsOpen(!optionsOpen)}
-                      className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+                      className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
                       title="Account options menu"
                     >
                       <MoreVertical size={18} />
@@ -121,38 +121,38 @@ export default function Dashboard() {
               </div>
 
               {/* ID / Phone Number */}
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-mono">
+              <div className="flex items-center justify-between gap-2 mb-4 sm:mb-5">
+                <span className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white font-mono truncate">
                   {user.phone || `+234 ${user.universalAccountNumber}`}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={copyUniversalId}
                     className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
                     title="Copy Account Number"
                   >
-                    <Copy size={16} />
+                    <Copy size={15} />
                   </button>
                   <button
                     onClick={() => setUniversalModalOpen(true)}
                     className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
                     title="View QR Code"
                   >
-                    <QrCode size={16} />
+                    <QrCode size={15} />
                   </button>
                 </div>
               </div>
 
               {/* Divider Line */}
-              <div className="h-px bg-white/15 w-full my-4" />
+              <div className="h-px bg-white/15 w-full my-3 sm:my-4" />
 
               {/* Portfolio Balance */}
               <div>
-                <p className="text-[11px] uppercase tracking-wider text-slate-300 mb-1">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-slate-300 mb-1">
                   Total Portfolio Balance
                 </p>
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+                  <span className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
                     {hideBalance
                       ? '••••••••'
                       : `$${totalPortfolioValue.toLocaleString(undefined, {

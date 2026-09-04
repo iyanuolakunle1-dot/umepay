@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import { CreditCard, History, Home, User } from 'lucide-react'
+import { ArrowUpRight, CreditCard, History, Home, User } from 'lucide-react'
 
 const tabs = [
   { to: '/dashboard', label: 'Home', icon: Home },
+  { to: '/send', label: 'Send', icon: ArrowUpRight },
   { to: '/wallets', label: 'Assets', icon: CreditCard },
   { to: '/history', label: 'History', icon: History },
   { to: '/settings', label: 'Profile', icon: User },
