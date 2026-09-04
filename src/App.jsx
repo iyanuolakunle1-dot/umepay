@@ -14,6 +14,7 @@ import SendMoney from './pages/SendMoney.jsx'
 import ReceivePayment from './pages/ReceivePayment.jsx'
 import Wallets from './pages/Wallets.jsx'
 import TransactionHistory from './pages/TransactionHistory.jsx'
+
 import ProfileSettings from './pages/ProfileSettings.jsx'
 import CurrencyConversion from './pages/CurrencyConversion.jsx'
 import NotFound from './pages/NotFound.jsx'
