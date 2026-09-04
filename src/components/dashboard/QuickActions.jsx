@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, ShoppingBag } from 'lucide-react'
 
 const actions = [
-  { to: '/send', label: 'Send Money', icon: ArrowUpRight },
+  { to: '/send', label: 'Send', icon: ArrowUpRight },
   { to: '/receive', label: 'Receive', icon: ArrowDownLeft },
   { to: '/convert', label: 'Convert', icon: ArrowLeftRight },
   { to: '/wallets', label: 'Spend', icon: ShoppingBag },

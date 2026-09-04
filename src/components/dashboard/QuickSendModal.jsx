@@ -52,7 +52,7 @@ export default function QuickSendModal({ open, onClose }) {
 
   return (
     <Modal open={open} onClose={handleClose} size="md">
-      <ModalHeader title={successReceipt ? 'Transfer Receipt' : 'Send Money'} onClose={handleClose} />
+      <ModalHeader title={successReceipt ? 'Transfer Receipt' : 'Send'} onClose={handleClose} />
       <div className="p-6">
         {successReceipt ? (
           <div className="text-center space-y-4">
