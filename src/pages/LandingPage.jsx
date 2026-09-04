@@ -25,6 +25,7 @@ import {
 import Modal, { ModalHeader } from '../components/ui/Modal.jsx'
 import Button from '../components/ui/Button.jsx'
 import CountryCodeDropdown from '../components/common/CountryCodeDropdown.jsx'
+import SplashScreen from '../components/common/SplashScreen.jsx'
 import { useApp } from '../context/AppContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 
@@ -165,6 +166,10 @@ export default function LandingPage() {
   const toast = useToast()
   const { user } = useApp()
 
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem('umepay_intro_shown')
+  })
+
   const [heroPhone, setHeroPhone] = useState('')
   const [ctaPhone, setCtaPhone] = useState('')
   const [countryCode, setCountryCode] = useState('+1')
@@ -216,8 +221,19 @@ export default function LandingPage() {
 
   return (
     <div className="bg-white text-[#0F172A] font-sans antialiased selection:bg-amber-100 selection:text-amber-900">
+      {/* 4-Second Brand Logo Intro Splash Screen */}
+      {showSplash && (
+        <SplashScreen
+          duration={4000}
+          onFinish={() => {
+            setShowSplash(false)
+            sessionStorage.setItem('umepay_intro_shown', 'true')
+          }}
+        />
+      )}
+
       {/* 1. Header / Navbar */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-xs transition-all">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 group cursor-pointer">
