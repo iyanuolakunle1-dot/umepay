@@ -218,26 +218,26 @@ export default function LandingPage() {
     <div className="bg-white text-[#0F172A] font-sans antialiased selection:bg-amber-100 selection:text-amber-900">
       {/* 1. Header / Navbar */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 sm:h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 group cursor-pointer">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#18224b] to-[#0f172a] text-white font-black text-base grid place-items-center shadow-md group-hover:scale-105 transition-transform">
+            <div className="h-8.5 w-8.5 rounded-xl bg-gradient-to-br from-[#18224b] to-[#0f172a] text-white font-black text-sm grid place-items-center shadow-md group-hover:scale-105 transition-transform">
               U
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-2xl text-[#0F172A] tracking-tight">Umepay</span>
+              <span className="font-extrabold text-xl sm:text-2xl text-[#0F172A] tracking-tight">Umepay</span>
               <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
             {navLinks.map((l) => (
               <button
                 key={l.label}
                 type="button"
                 onClick={() => scrollToSection(l.href)}
-                className="px-3.5 py-2 rounded-xl text-[13px] font-semibold text-slate-600 hover:text-ink-900 hover:bg-slate-100/80 transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl text-[13px] font-semibold text-slate-600 hover:text-ink-900 hover:bg-slate-100/80 transition-colors cursor-pointer"
               >
                 {l.label}
               </button>
@@ -245,16 +245,16 @@ export default function LandingPage() {
           </nav>
 
           {/* Desktop Right CTA Hub */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             <Link
               to="/login"
-              className="text-xs sm:text-sm font-bold text-slate-700 hover:text-ink-900 px-4 py-2.5 rounded-xl hover:bg-slate-100/80 transition-colors cursor-pointer"
+              className="text-xs sm:text-sm font-bold text-slate-700 hover:text-ink-900 px-3.5 py-2 rounded-xl hover:bg-slate-100/80 transition-colors cursor-pointer"
             >
               Sign In
             </Link>
             <Link
               to="/register"
-              className="bg-[#2b59ff] hover:bg-[#1f48e6] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2b59ff] hover:bg-[#1f48e6] text-white text-xs sm:text-sm font-bold px-4.5 py-2 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Get Started</span>
               <ArrowRight size={14} />
