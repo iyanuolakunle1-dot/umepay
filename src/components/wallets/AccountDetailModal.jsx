@@ -1,112 +1,167 @@
-import { Copy } from 'lucide-react'
-import Modal from '../ui/Modal.jsx'
-import Badge from '../ui/Badge.jsx'
-import Button from '../ui/Button.jsx'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Copy, X } from 'lucide-react'
 import { useToast } from '../../context/ToastContext.jsx'
-import { useApp } from '../../context/AppContext.jsx'
 
 export default function AccountDetailModal({ account, onClose }) {
   const toast = useToast()
-  const { user, activity } = useApp()
+  const navigate = useNavigate()
 
   if (!account) return null
 
-  const relatedTx = activity.filter((t) => t.asset === account.code).slice(0, 3)
+  const isCrypto = ['BTC', 'ETH', 'USDT', 'USDC'].includes(account.code)
 
-  function copyNumber() {
-    navigator.clipboard?.writeText(account.accountNumber)
-    toast.success('Account number copied')
+  function copyAddress() {
+    const addressToCopy = account.fullAddress || account.walletAddress || account.accountNumber || ''
+    if (navigator.clipboard && addressToCopy) {
+      navigator.clipboard.writeText(addressToCopy)
+      toast.success('Copied to Clipboard', `${account.name} address copied.`)
+    }
   }
 
   return (
-    <Modal open={!!account} onClose={onClose} size="sm" className="!rounded-2xl">
-      <div className="p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
+      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-100 relative">
+        {/* Header matching screenshot */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <Badge tone={account.accent}>{account.code}</Badge>
-            <h2 className="font-semibold text-ink-900">{account.name} Account</h2>
+            <span
+              className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                account.code === 'BTC'
+                  ? 'bg-amber-100/70 text-amber-700'
+                  : account.code === 'ETH'
+                  ? 'bg-indigo-100/70 text-indigo-700'
+                  : 'bg-emerald-100/70 text-emerald-700'
+              }`}
+            >
+              {account.code}
+            </span>
+            <h3 className="font-bold text-slate-900 text-base">
+              {account.name} Account
+            </h3>
           </div>
+
           <button
+            type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="h-8 w-8 grid place-items-center rounded-full text-slate-400 hover:bg-slate-100"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
 
-        <div className="rounded-xl bg-ink-50 p-4 mb-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Total Wallet Balance</p>
-          <p className="text-2xl font-bold text-ink-900">
-            {account.symbol}
-            {account.balance.toLocaleString()}
+        {/* Gradient Banner matching screenshot */}
+        <div className="rounded-2xl p-5 sm:p-6 mb-5 text-white bg-gradient-to-tr from-[#1E0099] via-[#2A00D0] to-[#4012E8] shadow-lg relative overflow-hidden">
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">
+            TOTAL WALLET BALANCE
           </p>
-          {account.heldForSettlement ? (
-            <p className="text-xs text-slate-400 mt-1.5">
-              Available: {account.symbol}
-              {(account.balance - account.heldForSettlement).toLocaleString()} ({account.symbol}
-              {account.heldForSettlement.toLocaleString()} held for pending standard settlement)
-            </p>
-          ) : null}
+          <p className="text-3xl font-extrabold tracking-tight text-white mb-0.5">
+            {account.code === 'BTC' ? '₿' : account.symbol || ''}
+            {account.balance.toLocaleString(undefined, { maximumFractionDigits: 6 })}{' '}
+            {account.code}
+          </p>
+          <p className="text-xs font-semibold text-emerald-300">
+            ≈ ${(account.usdEquivalent || 405.0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+          </p>
         </div>
 
-        <div className="rounded-xl border border-slate-100 divide-y divide-slate-100 mb-4">
-          <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-            <span className="text-slate-400">Virtual Bank Name</span>
-            <span className="font-semibold text-ink-900">{account.bankName}</span>
+        {/* Details Card matching screenshot */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-4 divide-y divide-slate-100 text-xs mb-5 space-y-2">
+          <div className="flex items-center justify-between pb-2">
+            <span className="text-slate-400 font-medium">Wallet Network</span>
+            <span className="font-bold text-slate-900">
+              {account.network || 'Bitcoin Mainnet'}
+            </span>
           </div>
-          <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-            <span className="text-slate-400">Account Number</span>
-            <button onClick={copyNumber} className="flex items-center gap-1.5 font-semibold text-ink-900">
-              {account.accountNumber}
-              <Copy size={14} className="text-slate-400" />
+
+          <div className="flex items-center justify-between py-2">
+            <span className="text-slate-400 font-medium">
+              {isCrypto ? 'Wallet Address' : 'Account Number'}
+            </span>
+            <button
+              type="button"
+              onClick={copyAddress}
+              className="flex items-center gap-1.5 font-bold text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              <span>{account.walletAddress || account.accountMask || 'bc1qxy2k...f2483'}</span>
+              <Copy size={13} className="text-slate-400" />
             </button>
           </div>
-          <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-            <span className="text-slate-400">Beneficiary Name</span>
-            <span className="font-semibold text-ink-900">{user.name}</span>
+
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-slate-400 font-medium">Average Buy Price</span>
+            <span className="font-bold text-slate-900">
+              ${(account.avgBuyPrice || 89500).toLocaleString()}.00 USD
+            </span>
           </div>
         </div>
 
-        {relatedTx.length > 0 && (
-          <div className="mb-5">
-            <p className="text-sm font-semibold text-ink-900 mb-2">
-              Last {relatedTx.length} {account.code} Transactions
-            </p>
-            <div className="space-y-1.5">
-              {relatedTx.map((t) => (
-                <div
-                  key={t.id}
-                  className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 text-sm"
-                >
-                  <span className="text-ink-700">{t.description}</span>
-                  <span
-                    className={`font-semibold ${
-                      t.direction === 'in' ? 'text-emerald-600' : 'text-ink-900'
-                    }`}
-                  >
-                    {t.direction === 'in' ? '+' : t.direction === 'out' ? '-' : ''}
-                    {account.symbol}
-                    {t.amount.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Last 3 Transactions matching screenshot */}
+        <div className="mb-6">
+          <p className="text-xs font-bold text-slate-900 mb-2.5">
+            Last 3 {account.code} Transactions
+          </p>
 
-        <div className="grid grid-cols-3 gap-2">
-          <Button variant="primary" size="sm">
-            Transfer
-          </Button>
-          <Button variant="secondary" size="sm">
-            Fund Account
-          </Button>
-          <Button variant="outline" size="sm">
-            Statement
-          </Button>
+          <div className="space-y-1.5">
+            {(account.recentTransactions || [
+              { id: 't1', description: 'Received BTC', amount: 0.002, direction: 'in' },
+              { id: 't2', description: 'Sent to External Wallet', amount: -0.001, direction: 'out' },
+              { id: 't3', description: 'Convert from USD', amount: 0.0015, direction: 'in' },
+            ]).map((t) => (
+              <div
+                key={t.id}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50/70 text-xs"
+              >
+                <span className="font-semibold text-slate-800">{t.description}</span>
+                <span
+                  className={`font-bold ${
+                    t.direction === 'in' || t.amount > 0 ? 'text-emerald-600' : 'text-slate-900'
+                  }`}
+                >
+                  {t.amount > 0 ? `+${t.amount}` : t.amount} {account.code}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Actions matching screenshot */}
+        <div className="grid grid-cols-3 gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              onClose()
+              navigate(`/send?asset=${account.code}`)
+            }}
+            className="py-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs transition-colors cursor-pointer text-center"
+          >
+            Send
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              onClose()
+              navigate(`/receive?asset=${account.code}`)
+            }}
+            className="py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-semibold text-xs transition-colors cursor-pointer text-center"
+          >
+            Receive
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              onClose()
+              navigate(`/convert?from=${account.code}`)
+            }}
+            className="py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer text-center"
+          >
+            Convert
+          </button>
         </div>
       </div>
-    </Modal>
+    </div>
   )
 }

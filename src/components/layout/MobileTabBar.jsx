@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { ArrowUpRight, CreditCard, History, Home, User } from 'lucide-react'
+import { ArrowUpRight, CreditCard, Wallet, Activity, Home, User } from 'lucide-react'
 
 const tabs = [
   { to: '/dashboard', label: 'Home', icon: Home },
   { to: '/send', label: 'Send', icon: ArrowUpRight },
-  { to: '/wallets', label: 'Assets', icon: CreditCard },
-  { to: '/history', label: 'History', icon: History },
-  { to: '/settings', label: 'Profile', icon: User },
+  { to: '/wallets', label: 'Wallets', icon: Wallet },
+  { to: '/cards', label: 'Cards', icon: CreditCard },
+  { to: '/history', label: 'History', icon: Activity },
 ]
 
 export default function MobileTabBar() {
@@ -20,7 +20,7 @@ export default function MobileTabBar() {
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all select-none ${
                 isActive
-                  ? 'text-ink-900 scale-105'
+                  ? 'text-slate-900 scale-105'
                   : 'text-slate-400 hover:text-slate-600'
               }`
             }
@@ -29,10 +29,10 @@ export default function MobileTabBar() {
               <>
                 <div
                   className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
-                    isActive ? 'bg-ink-50 text-ink-900' : 'text-slate-400'
+                    isActive ? 'bg-[#EEF2FF] text-[#0F172A]' : 'text-slate-400'
                   }`}
                 >
-                  <tab.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                  <tab.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span>{tab.label}</span>
               </>
@@ -43,4 +43,3 @@ export default function MobileTabBar() {
     </nav>
   )
 }
-

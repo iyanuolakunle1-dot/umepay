@@ -13,8 +13,12 @@ import Dashboard from './pages/Dashboard.jsx'
 import SendMoney from './pages/SendMoney.jsx'
 import ReceivePayment from './pages/ReceivePayment.jsx'
 import Wallets from './pages/Wallets.jsx'
+import Cards from './pages/Cards.jsx'
+import CreateCard from './pages/CreateCard.jsx'
+import CardDetails from './pages/CardDetails.jsx'
+import CardSettings from './pages/CardSettings.jsx'
+import CardTransactions from './pages/CardTransactions.jsx'
 import TransactionHistory from './pages/TransactionHistory.jsx'
-
 import ProfileSettings from './pages/ProfileSettings.jsx'
 import CurrencyConversion from './pages/CurrencyConversion.jsx'
 import NotFound from './pages/NotFound.jsx'
@@ -40,10 +44,19 @@ export default function App() {
             <Route path="/onboarding/kyc" element={<KycVerification />} />
             <Route path="/kyc" element={<KycVerification />} />
 
+            {/* App Features */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/send" element={<SendMoney />} />
             <Route path="/receive" element={<ReceivePayment />} />
             <Route path="/wallets" element={<Wallets />} />
+
+            {/* Virtual Cards Suite */}
+            <Route path="/cards" element={<Cards />} />
+            <Route path="/cards/create" element={<CreateCard />} />
+            <Route path="/cards/:id" element={<CardDetails />} />
+            <Route path="/cards/:id/settings" element={<CardSettings />} />
+            <Route path="/cards/:id/transactions" element={<CardTransactions />} />
+
             <Route path="/history" element={<TransactionHistory />} />
             <Route path="/settings" element={<ProfileSettings />} />
             <Route path="/convert" element={<CurrencyConversion />} />

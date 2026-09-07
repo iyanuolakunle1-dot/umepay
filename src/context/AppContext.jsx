@@ -3,6 +3,9 @@ import {
   currentUser,
   fiatAccounts as initialFiatAccounts,
   digitalAssets as initialDigitalAssets,
+  initialCards,
+  initialCardTransactions,
+  initialConversions,
   initialActivity,
   notifications as initialNotifications,
   recentContacts,
@@ -11,18 +14,21 @@ import {
 
 const AppContext = createContext(null)
 
-function genReference() {
+function genReference(prefix = 'TX') {
   const num = Math.floor(100000 + Math.random() * 900000)
-  const suffix = ['AD', 'OD', 'CD', 'WD', 'ED', 'PD', 'BD', 'RD', 'FD'][
-    Math.floor(Math.random() * 9)
+  const suffix = ['AD', 'OD', 'CD', 'WD', 'ED', 'PD', 'BD', 'RD', 'FD', 'XR', 'BT'][
+    Math.floor(Math.random() * 11)
   ]
-  return `TX-${num}-${suffix}`
+  return `${prefix}-${num}-${suffix}`
 }
 
 export function AppProvider({ children }) {
   const [user, setUser] = useState(currentUser)
   const [fiatAccounts, setFiatAccounts] = useState(initialFiatAccounts)
-  const [digitalAssets] = useState(initialDigitalAssets)
+  const [digitalAssets, setDigitalAssets] = useState(initialDigitalAssets)
+  const [cards, setCards] = useState(initialCards)
+  const [cardTransactions, setCardTransactions] = useState(initialCardTransactions)
+  const [conversions, setConversions] = useState(initialConversions)
   const [activity, setActivity] = useState(initialActivity)
   const [notifications, setNotifications] = useState(initialNotifications)
   const [lastReceipt, setLastReceipt] = useState(null)
@@ -57,8 +63,106 @@ export function AppProvider({ children }) {
     )
   }
 
+  // --- CARD MUTATIONS ---
+  function createCard({ label, currency, spendLimit, autoFund, fundingSource }) {
+    const last4 = String(Math.floor(1000 + Math.random() * 9000))
+    const cardId = `card-${Date.now()}`
+    const symbolMap = { USD: '$', NGN: '₦', EUR: '€', GBP: '£' }
+    const colorMap = { USD: 'blue', NGN: 'navy', EUR: 'gold', GBP: 'purple' }
+    const currencyLabelMap = {
+      USD: 'USD (United States Dollar)',
+      NGN: 'NGN (Nigerian Naira)',
+      EUR: 'EUR (Euro)',
+      GBP: 'GBP (British Pound)',
+    }
+
+    const newCard = {
+      id: cardId,
+      label: label || `${currency} Virtual Card`,
+      currency,
+      currencyLabel: currencyLabelMap[currency] || `${currency} Card`,
+      symbol: symbolMap[currency] || '$',
+      balance: 0.0,
+      spendLimit: parseFloat(spendLimit) || 500.0,
+      spentThisMonth: 0.0,
+      autoFund: !!autoFund,
+      autoFundThreshold: 50.0,
+      autoFundTopup: 200.0,
+      fundingSource: fundingSource || 'USD Wallet',
+      last4,
+      cardNumber: `4821 •••• •••• ${last4}`,
+      fullCardNumber: `4821 5590 1284 ${last4}`,
+      holder: user.name.toUpperCase(),
+      expiry: '09/29',
+      cvv: String(Math.floor(100 + Math.random() * 900)),
+      cardType: 'Virtual Visa Debit',
+      network: 'Visa debit international',
+      createdDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      status: 'ACTIVE',
+      colorScheme: colorMap[currency] || 'blue',
+      txCountThisMonth: 0,
+      settings: {
+        spendingLimitEnabled: true,
+        monthlyLimit: parseFloat(spendLimit) || 500.0,
+        perTxLimitEnabled: false,
+        perTxLimit: 250.0,
+        dailyTxCountEnabled: false,
+        dailyTxCount: 5,
+        onlineTx: true,
+        internationalTx: true,
+        contactless: false,
+        atmWithdrawals: false,
+        txAlerts: true,
+        declineAlerts: true,
+        summaryEmail: true,
+        autoFundEnabled: !!autoFund,
+        minThreshold: 50.0,
+        topUpAmount: 200.0,
+        fundingSource: fundingSource || 'USD Wallet',
+      },
+    }
+
+    setCards((prev) => [newCard, ...prev])
+    return newCard
+  }
+
+  function toggleCardFreeze(cardId) {
+    setCards((prev) =>
+      prev.map((c) =>
+        c.id === cardId
+          ? { ...c, status: c.status === 'ACTIVE' ? 'FROZEN' : 'ACTIVE' }
+          : c
+      )
+    )
+  }
+
+  function deleteCard(cardId) {
+    setCards((prev) => prev.filter((c) => c.id !== cardId))
+  }
+
+  function updateCardLabel(cardId, newLabel) {
+    setCards((prev) =>
+      prev.map((c) => (c.id === cardId ? { ...c, label: newLabel } : c))
+    )
+  }
+
+  function updateCardSettings(cardId, newSettings) {
+    setCards((prev) =>
+      prev.map((c) => (c.id === cardId ? { ...c, settings: { ...c.settings, ...newSettings } } : c))
+    )
+  }
+
+  function fundCard(cardId, amount) {
+    setCards((prev) =>
+      prev.map((c) =>
+        c.id === cardId ? { ...c, balance: c.balance + parseFloat(amount) } : c
+      )
+    )
+  }
+
+  // --- TRANSFERS & CONVERSIONS ---
   function sendToContact({ recipient, amount, currency, remark }) {
-    const reference = genReference()
+    const reference = genReference('TX')
     adjustFiatBalance(currency, -amount)
     const record = {
       id: reference,
@@ -87,7 +191,7 @@ export function AppProvider({ children }) {
   }
 
   function sendToExternalWallet({ asset, address, network, amount, remark }) {
-    const reference = genReference()
+    const reference = genReference('TX')
     const record = {
       id: reference,
       date: 'Today',
@@ -108,10 +212,27 @@ export function AppProvider({ children }) {
     return receipt
   }
 
-  function convertAssets({ fromAmount, fromCurrency, toAmount, toCurrency }) {
-    const reference = genReference()
+  function convertAssets({ fromAmount, fromCurrency, toAmount, toCurrency, exchangeRate }) {
+    const reference = genReference('CV')
     if (findAccount(fromCurrency)) adjustFiatBalance(fromCurrency, -fromAmount)
     if (findAccount(toCurrency)) adjustFiatBalance(toCurrency, toAmount)
+
+    const newConversion = {
+      id: reference,
+      date: 'Today',
+      fromAmount,
+      fromCurrency,
+      toAmount,
+      toCurrency,
+      text: `${fromAmount.toLocaleString()} ${fromCurrency} converted to ${toCurrency}`,
+      creditedText: `+${toCurrency === 'NGN' ? '₦' : toCurrency === 'EUR' ? '€' : toCurrency === 'GBP' ? '£' : ''}${toAmount.toLocaleString()}${toCurrency === 'BTC' ? ' BTC' : ''}`,
+      reference,
+      exchangeRate: exchangeRate || `1 ${fromCurrency} = ${Number(toAmount / fromAmount).toLocaleString()} ${toCurrency}`,
+      status: 'SUCCESSFUL',
+    }
+
+    setConversions((prev) => [newConversion, ...prev])
+
     const record = {
       id: reference,
       date: 'Today',
@@ -126,7 +247,7 @@ export function AppProvider({ children }) {
       reference,
     }
     setActivity((prev) => [record, ...prev])
-    return record
+    return newConversion
   }
 
   function logout() {
@@ -141,6 +262,15 @@ export function AppProvider({ children }) {
     logout,
     fiatAccounts,
     digitalAssets,
+    cards,
+    cardTransactions,
+    conversions,
+    createCard,
+    toggleCardFreeze,
+    deleteCard,
+    updateCardLabel,
+    updateCardSettings,
+    fundCard,
     activity,
     notifications,
     unreadCount,
