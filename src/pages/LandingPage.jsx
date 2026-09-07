@@ -15,7 +15,6 @@ import {
   X,
 } from 'lucide-react'
 import CountryCodeDropdown from '../components/common/CountryCodeDropdown.jsx'
-import SplashScreen from '../components/common/SplashScreen.jsx'
 import LandingHeroDiagram from '../components/landing/LandingHeroDiagram.jsx'
 import LandingVirtualCard from '../components/landing/LandingVirtualCard.jsx'
 
@@ -153,10 +152,6 @@ const stats = [
 export default function LandingPage() {
   const navigate = useNavigate()
 
-  const [showSplash, setShowSplash] = useState(() => {
-    return !sessionStorage.getItem('umepay_intro_shown')
-  })
-
   const [heroPhone, setHeroPhone] = useState('')
   const [ctaPhone, setCtaPhone] = useState('')
   const [countryCode, setCountryCode] = useState('+1')
@@ -184,17 +179,6 @@ export default function LandingPage() {
 
   return (
     <div className="bg-white text-[#0F172A] font-sans antialiased selection:bg-amber-100 selection:text-amber-900 min-h-screen">
-      {/* Brand Intro Splash Screen */}
-      {showSplash && (
-        <SplashScreen
-          duration={2500}
-          onFinish={() => {
-            setShowSplash(false)
-            sessionStorage.setItem('umepay_intro_shown', 'true')
-          }}
-        />
-      )}
-
       {/* 1. Header / Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100/90 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between">
