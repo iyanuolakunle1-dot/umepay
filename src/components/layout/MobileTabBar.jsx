@@ -12,13 +12,13 @@ const tabs = [
 export default function MobileTabBar() {
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-lg border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] pb-[max(env(safe-area-inset-bottom),10px)]">
-      <div className="flex items-center justify-around px-2 py-1.5">
+      <div className="grid grid-cols-5 items-stretch px-1 py-1.5">
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all select-none ${
+              `flex min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all select-none ${
                 isActive
                   ? 'text-slate-900 scale-105'
                   : 'text-slate-400 hover:text-slate-600'

@@ -112,7 +112,7 @@ export default function Dashboard() {
         {/* TOP SECTION: Blue Universal Card + 2x2 Quick Actions matching screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Universal Financial ID Card (Royal Blue) */}
-          <div className="lg:col-span-8 rounded-3xl p-6 sm:p-7 text-white bg-gradient-to-tr from-[#0038E2] via-[#0052FF] to-[#0A65FF] shadow-lg flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:col-span-8 rounded-3xl p-4 sm:p-7 text-white bg-gradient-to-tr from-[#0038E2] via-[#0052FF] to-[#0A65FF] shadow-lg flex flex-col justify-between relative overflow-hidden">
             <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-white/10 blur-xl pointer-events-none" />
 
             <div>
@@ -139,7 +139,7 @@ export default function Dashboard() {
                 UNIVERSAL ACCOUNT NUMBER
               </p>
               <div className="flex items-center gap-3">
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-wider font-mono text-white">
+                <span className="text-lg sm:text-3xl font-extrabold tracking-wider font-mono text-white break-all">
                   {user.universalAccountNumber || '812 345 6789'}
                 </span>
                 <button
@@ -210,8 +210,8 @@ export default function Dashboard() {
 
         {/* SECTION 2: Multi-Asset Portfolio Cards */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2.5">
               <span className="text-sm font-bold text-slate-800">My Multi-Asset Portfolio</span>
               <span className="text-base font-extrabold text-slate-900">
                 ${(totalPortfolioValue || 12450.32).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

@@ -42,15 +42,15 @@ export default function Header({ title }) {
   }, [userMenuOpen])
 
   return (
-    <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-100 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
       {/* Title / Page Name */}
-      <div>
-        <h1 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
+      <div className="min-w-0">
+        <h1 className="text-base sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
           {title}
         </h1>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-5">
+      <div className="flex items-center gap-2 sm:gap-5 shrink-0">
         {/* Search Bar matching screenshot */}
         <div className="relative hidden md:block">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -68,7 +68,7 @@ export default function Header({ title }) {
           <button
             type="button"
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-3 sm:pl-3 text-left group hover:opacity-90 transition-opacity cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 sm:pl-3 text-left group hover:opacity-90 transition-opacity cursor-pointer"
             title="Account menu"
           >
             <div className="h-9 w-9 rounded-full bg-indigo-100 text-indigo-800 grid place-items-center text-xs font-bold shrink-0">
@@ -88,7 +88,9 @@ export default function Header({ title }) {
               <div className="px-3.5 py-2.5 border-b border-slate-100 mb-1">
                 <p className="text-sm font-bold text-slate-900 truncate">{user.name}</p>
                 <p className="text-xs text-slate-400 truncate">{user.email}</p>
-                <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">{user.tier}</p>
+                <p className={`text-[11px] font-bold mt-0.5 ${user.kycVerified ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {user.tier}
+                </p>
               </div>
 
               <button

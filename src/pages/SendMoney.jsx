@@ -219,11 +219,11 @@ export default function SendMoney() {
   return (
     <DashboardLayout title="Send">
       {/* 1. Header Channel Selector */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h1 className="text-2xl font-black text-ink-900 tracking-tight">Send Payment</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black text-ink-900 tracking-tight">Send Payment</h1>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed sm:mt-0.5">
               Instant multi-rail settlement across phone IDs, global bank accounts, and crypto addresses.
             </p>
           </div>
@@ -247,7 +247,7 @@ export default function SendMoney() {
                 key={c.id}
                 type="button"
                 onClick={() => setChannel(c.id)}
-                className={`p-3.5 rounded-xl text-left transition-all cursor-pointer flex items-center gap-3 relative ${
+                className={`min-w-0 p-3 rounded-xl text-left transition-all cursor-pointer flex items-center gap-2.5 sm:gap-3 relative ${
                   active
                     ? 'bg-white text-ink-900 shadow-md ring-1 ring-slate-900/5'
                     : 'text-slate-600 hover:bg-white/60'
@@ -261,9 +261,9 @@ export default function SendMoney() {
                   <Icon size={18} strokeWidth={2.2} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <p className="text-xs font-extrabold truncate">{c.label}</p>
-                    <Badge variant={active ? 'primary' : 'neutral'} size="sm">
+                    <Badge variant={active ? 'primary' : 'neutral'} size="sm" className="self-start sm:self-auto shrink-0">
                       {c.badge}
                     </Badge>
                   </div>
@@ -284,7 +284,7 @@ export default function SendMoney() {
               <CardHeader
                 title="Recipient Universal ID"
                 action={
-                  <Badge variant="success" size="sm">
+                  <Badge variant="success" size="sm" className="max-w-full">
                     <ShieldCheck size={12} className="mr-1 inline" /> Verified Universal Directory
                   </Badge>
                 }

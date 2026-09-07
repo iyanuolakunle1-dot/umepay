@@ -104,7 +104,7 @@ export default function Wallets() {
     <DashboardLayout title="Wallets & Accounts">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Tab Switcher matching screenshot: Portfolio | Conversions */}
-        <div className="flex items-center gap-8 border-b border-slate-200">
+        <div className="flex items-center gap-6 border-b border-slate-200">
           <button
             type="button"
             onClick={() => {
@@ -144,8 +144,8 @@ export default function Wallets() {
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Total Multi-Asset Portfolio Value
                 </p>
-                <div className="flex items-center gap-3 mt-1">
-                  <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
+                    <p className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
                     ${totalPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-xs">
@@ -154,18 +154,18 @@ export default function Wallets() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setActiveTab('conversions')}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                 >
                   Convert Assets
                 </button>
                 <button
                   type="button"
                   onClick={() => setLinkOpen(true)}
-                  className="px-4 py-2.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs tracking-wide transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs tracking-wide transition-colors cursor-pointer shadow-xs flex items-center justify-center gap-1.5"
                 >
                   <Plus size={15} />
                   <span>Link New Account</span>

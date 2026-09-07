@@ -264,92 +264,92 @@ export default function KycVerification() {
         className="hidden"
       />
 
-      <div className="w-full max-w-[800px] bg-white rounded-3xl sm:rounded-[32px] shadow-sm border border-slate-200/80 p-6 sm:p-12 animate-fade-in">
+      <div className="w-full max-w-[800px] bg-white rounded-2xl sm:rounded-[32px] shadow-sm border border-slate-200/80 p-5 sm:p-12 animate-fade-in">
         {/* Navigation & Step Pill */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <button
             onClick={handleBack}
-            className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 hover:text-slate-950 transition-colors"
+            className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-800 hover:text-slate-950 transition-colors"
           >
             <ArrowLeft size={16} strokeWidth={2.5} /> Back
           </button>
 
-          <span className="inline-flex items-center bg-slate-100 text-slate-800 text-[11px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
+          <span className="inline-flex items-center bg-slate-100 text-slate-800 text-[10px] sm:text-xs font-bold px-3 sm:px-3.5 py-1 rounded-full uppercase tracking-wider">
             STEP {currentStep} OF 3
           </span>
         </div>
 
         {/* 3-Step Stepper Progress Header */}
-        <div className="flex items-center justify-between mb-10 gap-2 sm:gap-3">
+        <div className="flex items-center justify-between mb-8 sm:mb-10 gap-1.5 sm:gap-3">
           {/* Step 1 */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep > 1 ? (
-              <div className="h-8 w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
-                <Check size={16} strokeWidth={3} />
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
+                <Check size={14} strokeWidth={3} />
               </div>
             ) : (
-              <div className="h-8 w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                 1
               </div>
             )}
-            <div className="leading-tight truncate">
-              <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight">
+            <div className="leading-tight min-w-0">
+              <p className="text-[9px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight truncate">
                 STEP 1 {currentStep === 1 ? '(ACTIVE)' : ''}
               </p>
-              <p className={`text-xs sm:text-sm font-semibold ${currentStep === 1 ? 'text-slate-900' : 'text-slate-600'}`}>
+              <p className={`text-[11px] sm:text-sm font-semibold truncate ${currentStep === 1 ? 'text-slate-900' : 'text-slate-600'}`}>
                 Personal Info
               </p>
             </div>
           </div>
 
           {/* Line 1 */}
-          <div className={`h-[2px] flex-1 min-w-[20px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 1 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+          <div className={`h-[2px] flex-1 min-w-[12px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 1 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
 
           {/* Step 2 */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep > 2 ? (
-              <div className="h-8 w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
-                <Check size={16} strokeWidth={3} />
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
+                <Check size={14} strokeWidth={3} />
               </div>
             ) : currentStep === 2 ? (
-              <div className="h-8 w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                 2
               </div>
             ) : (
-              <div className="h-8 w-8 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-sm font-semibold shrink-0">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0">
                 2
               </div>
             )}
-            <div className="leading-tight truncate">
-              <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight">
+            <div className="leading-tight min-w-0">
+              <p className="text-[9px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight truncate">
                 STEP 2 {currentStep === 2 ? '(ACTIVE)' : ''}
               </p>
-              <p className={`text-xs sm:text-sm font-semibold ${currentStep === 2 ? 'text-slate-900' : 'text-slate-500'}`}>
-                Document Upload
+              <p className={`text-[11px] sm:text-sm font-semibold truncate ${currentStep === 2 ? 'text-slate-900' : 'text-slate-500'}`}>
+                Documents
               </p>
             </div>
           </div>
 
           {/* Line 2 */}
-          <div className={`h-[2px] flex-1 min-w-[20px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 2 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+          <div className={`h-[2px] flex-1 min-w-[12px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 2 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
 
           {/* Step 3 */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep === 3 ? (
-              <div className="h-8 w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                 3
               </div>
             ) : (
-              <div className="h-8 w-8 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-sm font-semibold shrink-0">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0">
                 3
               </div>
             )}
-            <div className="leading-tight truncate">
-              <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight">
+            <div className="leading-tight min-w-0">
+              <p className="text-[9px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-tight truncate">
                 STEP 3 {currentStep === 3 ? '(ACTIVE)' : ''}
               </p>
-              <p className={`text-xs sm:text-sm font-semibold ${currentStep === 3 ? 'text-slate-900' : 'text-slate-500'}`}>
-                Selfie Verification
+              <p className={`text-[11px] sm:text-sm font-semibold truncate ${currentStep === 3 ? 'text-slate-900' : 'text-slate-500'}`}>
+                Selfie
               </p>
             </div>
           </div>

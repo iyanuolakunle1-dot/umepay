@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -10,6 +10,8 @@ import {
   LogOut,
   Settings,
   ShieldCheck,
+  ShieldAlert,
+  ArrowRight,
 } from 'lucide-react'
 import { UmepayLogo } from '../common/RealIcons.jsx'
 import LogoutModal from '../common/LogoutModal.jsx'
@@ -59,16 +61,34 @@ export default function Sidebar() {
         </div>
 
         <div className="space-y-3">
-          {/* Verified Account Tier 2 Card matching screenshot */}
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-            <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-xs mb-1">
-              <ShieldCheck size={16} />
-              <span>Verified Account Tier 2</span>
+          {/* Dynamic KYC Account Status Card */}
+          {user.kycVerified ? (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 transition-colors">
+              <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-xs mb-1">
+                <ShieldCheck size={16} />
+                <span>Verified Account</span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Full limits and all features unlocked.
+              </p>
             </div>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Premium multi-asset features &amp; instant limits unlocked.
-            </p>
-          </div>
+          ) : (
+            <Link
+              to="/kyc"
+              className="block rounded-2xl border border-amber-300 bg-amber-50/80 hover:bg-amber-100/90 p-4 transition-all group shadow-xs cursor-pointer"
+            >
+              <div className="flex items-center justify-between gap-1 text-amber-800 font-bold text-xs mb-1">
+                <div className="flex items-center gap-1.5">
+                  <ShieldAlert size={16} className="text-amber-600" />
+                  <span>Unverified Account</span>
+                </div>
+                <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform text-amber-700" />
+              </div>
+              <p className="text-[11px] text-amber-900/80 leading-relaxed">
+                Complete KYC to unlock virtual cards &amp; full limits.
+              </p>
+            </Link>
+          )}
 
           <button
             type="button"
