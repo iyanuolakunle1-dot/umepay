@@ -3,31 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowRight,
-  ArrowUpRight,
-  Building2,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
-  Copy,
-  CreditCard,
-  Globe2,
-  Lock,
-  Phone,
+  Grid2X2,
   QrCode,
   Search,
-  ShieldCheck,
-  Sparkles,
-  User,
-  Wallet,
-  Zap,
+  ShieldAlert,
 } from 'lucide-react'
 import DashboardLayout from '../components/layout/DashboardLayout.jsx'
-import Card, { CardHeader } from '../components/ui/Card.jsx'
 import Button from '../components/ui/Button.jsx'
-import Input from '../components/ui/Input.jsx'
-import Badge from '../components/ui/Badge.jsx'
-import Modal, { ModalHeader } from '../components/ui/Modal.jsx'
-import CountryCodeDropdown from '../components/common/CountryCodeDropdown.jsx'
 import ContactCard from '../components/send/ContactCard.jsx'
 import QrScannerModal from '../components/send/QrScannerModal.jsx'
 import PinAuthModal from '../components/send/PinAuthModal.jsx'
@@ -35,43 +21,210 @@ import ProfessionalReceiptModal from '../components/send/ProfessionalReceiptModa
 import { useApp } from '../context/AppContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 
-const CHANNELS = [
-  {
-    id: 'phone',
-    label: 'Phone / Universal ID',
-    sub: 'Instant Zero-Fee P2P',
-    icon: Phone,
-    badge: 'Instant',
-  },
-  {
-    id: 'bank',
-    label: 'Bank Account Rail',
-    sub: 'ACH, Wire, SEPA, NIBSS',
-    icon: Building2,
-    badge: 'Direct Wire',
-  },
-  {
-    id: 'crypto',
-    label: 'Crypto / Multi-Chain',
-    sub: 'USDT, USDC, BTC, ETH',
-    icon: Wallet,
-    badge: 'On-Chain',
-  },
+// ─── Nigerian banks list (for fiat external transfers) ───────────────────────
+const NIGERIAN_BANKS = [
+  'Access Bank',
+  'Citibank Nigeria',
+  'Ecobank Nigeria',
+  'Fidelity Bank',
+  'First Bank of Nigeria',
+  'First City Monument Bank (FCMB)',
+  'Globus Bank',
+  'Guaranty Trust Bank (GTB)',
+  'Heritage Bank',
+  'Keystone Bank',
+  'Kuda Microfinance Bank',
+  'Opay',
+  'Palmpay',
+  'Polaris Bank',
+  'Premium Trust Bank',
+  'Providus Bank',
+  'Stanbic IBTC Bank',
+  'Standard Chartered Bank',
+  'Sterling Bank',
+  'SunTrust Bank',
+  'Titan Trust Bank',
+  'Union Bank',
+  'United Bank for Africa (UBA)',
+  'Unity Bank',
+  'Wema Bank',
+  'Zenith Bank',
 ]
 
-const POPULAR_BANKS = [
-  { name: 'Chase Bank (JPMorgan)', code: 'CHASE', country: '🇺🇸 US' },
-  { name: 'Standard Chartered', code: 'SCB', country: '🇬🇧 Global' },
-  { name: 'Barclays Bank', code: 'BARC', country: '🇬🇧 UK' },
-  { name: 'Revolut Bank', code: 'REV', country: '🇪🇺 EU' },
-  { name: 'Access Bank', code: 'ACC', country: '🇳🇬 NG' },
-  { name: 'Wema Bank / ALAT', code: 'WEMA', country: '🇳🇬 NG' },
-  { name: 'Zenith Bank', code: 'ZEN', country: '🇳🇬 NG' },
-  { name: 'Kuda Microfinance Bank', code: 'KUDA', country: '🇳🇬 NG' },
-]
+// ─── Networks per crypto asset ────────────────────────────────────────────────
+const CRYPTO_NETWORKS = {
+  BTC:  ['Bitcoin Mainnet', 'Bitcoin Testnet'],
+  ETH:  ['Ethereum (ERC-20)', 'Polygon POS', 'Arbitrum One', 'Optimism'],
+  USDT: ['Tron (TRC-20)', 'Ethereum (ERC-20)', 'BNB Smart Chain (BEP-20)', 'Solana'],
+  USDC: ['Ethereum (ERC-20)', 'Solana', 'Polygon POS', 'Arbitrum One'],
+}
 
-const QUICK_AMOUNTS = [25, 50, 100, 250, 500, 1000]
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function fmtBal(account) {
+  return `${account.symbol}${account.balance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
 
+function fmtCrypto(asset) {
+  return `${asset.balance} ${asset.code}`
+}
+
+// Build a unified wallet list for the source-wallet dropdown
+function buildWalletList(fiatAccounts, digitalAssets) {
+  const fiats = fiatAccounts.map(a => ({
+    id: a.id,
+    code: a.code,
+    label: `${a.name} (${a.code})`,
+    balanceLabel: `Bal: ${fmtBal(a)}`,
+    isCrypto: false,
+    raw: a,
+  }))
+  const crypto = digitalAssets.map(a => ({
+    id: a.id,
+    code: a.code,
+    label: a.name,
+    balanceLabel: `Bal: ${fmtCrypto(a)}`,
+    isCrypto: true,
+    raw: a,
+  }))
+  return [...fiats, ...crypto]
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+/**
+ * Styled select that matches the screenshot's wallet/bank dropdown style
+ */
+function StyledSelect({ value, onChange, children, className = '' }) {
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={value}
+        onChange={onChange}
+        className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-3 pr-9 text-sm font-semibold text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100 appearance-none cursor-pointer"
+      >
+        {children}
+      </select>
+      <ChevronDown
+        size={15}
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+      />
+    </div>
+  )
+}
+
+/**
+ * Labeled form field wrapper
+ */
+function Field({ label, children }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-sm font-semibold text-ink-900">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+/**
+ * Currency-tagged amount input (fiat)
+ */
+function FiatAmountInput({ symbol, value, onChange, currency, usdRate, onMax }) {
+  const usdEq = usdRate && value ? (parseFloat(value) / usdRate).toFixed(2) : null
+  return (
+    <div>
+      <div className="flex items-center h-14 rounded-xl border border-slate-200 bg-white px-4 gap-3 focus-within:border-ink-700 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
+        <span className="text-2xl font-bold text-ink-900 shrink-0">{symbol}</span>
+        <input
+          type="number"
+          min="0"
+          value={value}
+          onChange={onChange}
+          placeholder="0.00"
+          className="flex-1 min-w-0 text-2xl font-bold text-ink-900 outline-none bg-transparent"
+        />
+        <button
+          type="button"
+          onClick={onMax}
+          className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-ink-800 transition-colors cursor-pointer"
+        >
+          MAX
+        </button>
+      </div>
+      {usdEq && (
+        <p className="text-xs text-slate-400 mt-1.5">≈ ${usdEq} USD equivalent</p>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Crypto amount input
+ */
+function CryptoAmountInput({ value, onChange, code, usdPerUnit, onMax }) {
+  const usdEq = usdPerUnit && value ? `~$${(parseFloat(value || 0) * usdPerUnit).toFixed(2)} USD` : null
+  const networkFee = code === 'BTC' ? '0.00005' : code === 'ETH' ? '0.0005' : '0.50'
+  const feeLabel   = `${networkFee} ${code}`
+  return (
+    <div>
+      <div className="flex items-center h-14 rounded-xl border border-slate-200 bg-white px-4 gap-3 focus-within:border-ink-700 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
+        <input
+          type="number"
+          min="0"
+          step="any"
+          value={value}
+          onChange={onChange}
+          placeholder="0.00"
+          className="flex-1 min-w-0 text-2xl font-bold text-ink-900 outline-none bg-transparent"
+        />
+        <span className="shrink-0 text-sm font-bold text-ink-800 bg-slate-100 px-3 py-1.5 rounded-lg">
+          {code}
+        </span>
+        <button
+          type="button"
+          onClick={onMax}
+          className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-ink-800 transition-colors cursor-pointer"
+        >
+          Max
+        </button>
+      </div>
+      <div className="flex justify-between text-xs text-slate-400 mt-1.5">
+        {usdEq && <span>Equivalent: {usdEq}</span>}
+        <span>Network fee estimate: {feeLabel}</span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Source Wallet Picker — pill badge + name + balance
+ */
+function WalletPicker({ wallets, selectedId, onChange }) {
+  const selected = wallets.find(w => w.id === selectedId) || wallets[0]
+  return (
+    <div className="relative">
+      <select
+        value={selectedId}
+        onChange={e => onChange(e.target.value)}
+        className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-14 pr-9 text-sm font-semibold text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100 appearance-none cursor-pointer"
+      >
+        {wallets.map(w => (
+          <option key={w.id} value={w.id}>
+            {w.label} — {w.balanceLabel}
+          </option>
+        ))}
+      </select>
+      {/* Code badge overlay */}
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-ink-100 text-ink-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md tracking-wide">
+        {selected.code}
+      </span>
+      <ChevronDown
+        size={15}
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+      />
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function SendMoney() {
   const {
     user,
@@ -82,721 +235,602 @@ export default function SendMoney() {
     sendToContact,
     sendToExternalWallet,
   } = useApp()
-  const toast = useToast()
+  const toast    = useToast()
   const navigate = useNavigate()
 
-  // Primary Transfer Mode: 'phone' | 'bank' | 'crypto'
-  const [channel, setChannel] = useState('phone')
+  // Primary tab
+  const [tab, setTab] = useState('external') // 'contact' | 'external'
 
-  // --- Phone / Universal ID State ---
-  const [countryCode, setCountryCode] = useState('+234')
-  const [phoneRecipient, setPhoneRecipient] = useState('809 123 4567')
-  const [phoneRecipientName, setPhoneRecipientName] = useState('Chioma Eze')
-  const [searchContactQuery, setSearchContactQuery] = useState('')
+  // ── Send-to-Contact state ──────────────────────────────────────────────────
+  const [searchContact, setSearchContact] = useState('')
   const [selectedContact, setSelectedContact] = useState(recentContacts[0])
+  const [contactAmount, setContactAmount] = useState('')
+  const [contactCurrency, setContactCurrency] = useState('NGN')
+  const [contactRemark, setContactRemark] = useState('')
 
-  // --- Bank Account Rail State ---
-  const [bankName, setBankName] = useState('Chase Bank (JPMorgan)')
-  const [accountNumber, setAccountNumber] = useState('021000021')
-  const [accountName, setAccountName] = useState('Alexander Cooper')
-  const [routingNumber, setRoutingNumber] = useState('021000021')
+  // ── Send-to-External state ─────────────────────────────────────────────────
+  const wallets      = useMemo(() => buildWalletList(fiatAccounts, digitalAssets), [fiatAccounts, digitalAssets])
+  const [walletId, setWalletId] = useState(wallets[0]?.id ?? '')
+  const activeWallet = wallets.find(w => w.id === walletId) || wallets[0]
+  const isCrypto     = activeWallet?.isCrypto ?? false
 
-  // --- Crypto / Multi-Chain State ---
-  const [cryptoAsset, setCryptoAsset] = useState(digitalAssets[0]) // USDT
+  // Fiat-external fields
+  const [bankName,      setBankName]      = useState('Wema Bank')
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountName,   setAccountName]   = useState('')
+  const [fiatAmount,    setFiatAmount]     = useState('')
+  const [fiatRemark,    setFiatRemark]     = useState('')
+
+  // Crypto-external fields
   const [cryptoAddress, setCryptoAddress] = useState('')
-  const [network, setNetwork] = useState('Tron (TRC-20)')
-  const [cryptoAmount, setCryptoAmount] = useState('150.00')
+  const [network,       setNetwork]       = useState('')
+  const [cryptoAmount,  setCryptoAmount]  = useState('')
+  const [cryptoRemark,  setCryptoRemark]  = useState('')
 
-  // --- Common Transfer Fields ---
-  const [amount, setAmount] = useState('150.00')
-  const [currency, setCurrency] = useState('USD')
-  const [remark, setRemark] = useState('Project milestone settlement')
+  // When wallet changes, reset & set default network
+  function handleWalletChange(id) {
+    setWalletId(id)
+    const w = wallets.find(x => x.id === id)
+    if (w?.isCrypto) {
+      const nets = CRYPTO_NETWORKS[w.code] || []
+      setNetwork(nets[0] || '')
+    }
+    setFiatAmount(''); setCryptoAmount('')
+  }
 
-  // --- Modals State ---
-  const [isQrScannerOpen, setIsQrScannerOpen] = useState(false)
-  const [isReviewOpen, setIsReviewOpen] = useState(false)
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [receipt, setReceipt] = useState(null)
+  // ── Modals ─────────────────────────────────────────────────────────────────
+  const [isQrOpen,      setIsQrOpen]      = useState(false)
+  const [isReviewOpen,  setIsReviewOpen]  = useState(false)
+  const [isPinOpen,     setIsPinOpen]     = useState(false)
+  const [processing,    setProcessing]    = useState(false)
+  const [receipt,       setReceipt]       = useState(null)
 
-  const activeAccount = fiatAccounts.find((a) => a.code === currency) || fiatAccounts[0]
-
+  // ── Memos ──────────────────────────────────────────────────────────────────
   const filteredContacts = useMemo(() => {
-    if (!searchContactQuery) return myContacts
-    return myContacts.filter((c) =>
-      `${c.name} ${c.phone}`.toLowerCase().includes(searchContactQuery.toLowerCase())
-    )
-  }, [myContacts, searchContactQuery])
+    if (!searchContact) return myContacts
+    const q = searchContact.toLowerCase()
+    return myContacts.filter(c => `${c.name} ${c.phone}`.toLowerCase().includes(q))
+  }, [myContacts, searchContact])
 
+  // Account name lookup simulation
+  const resolvedName = useMemo(() => {
+    if (accountNumber.length >= 10) return 'John Doe'
+    return null
+  }, [accountNumber])
+
+  // ── Derived transfer breakdown ─────────────────────────────────────────────
+  const breakdown = useMemo(() => {
+    if (tab === 'contact') {
+      const acc   = fiatAccounts.find(a => a.code === contactCurrency) || fiatAccounts[0]
+      const amt   = parseFloat(contactAmount) || 0
+      const fee   = 0
+      return {
+        transferAmount: `${acc.symbol}${amt.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
+        fee:            `${acc.symbol}0.00 (Zero Fee)`,
+        total:          `${acc.symbol}${(amt + fee).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
+        arrival:        '~Instant',
+        isCrypto:       false,
+      }
+    }
+
+    if (isCrypto) {
+      const asset = activeWallet.raw
+      const amt   = parseFloat(cryptoAmount) || 0
+      const fee   = asset.code === 'BTC' ? 0.00005 : asset.code === 'ETH' ? 0.0005 : 0.5
+      return {
+        transferAmount: `${amt} ${asset.code}`,
+        fee:            `${fee} ${asset.code}`,
+        total:          `${(amt + fee).toFixed(asset.code === 'BTC' ? 5 : 2)} ${asset.code}`,
+        arrival:        '~1.5 Seconds',
+        isCrypto:       true,
+      }
+    }
+
+    // Fiat external (bank transfer)
+    const acc = activeWallet.raw
+    const amt = parseFloat(fiatAmount) || 0
+    const fee = 50 // flat bank fee in NGN (adjust per currency if needed)
+    return {
+      transferAmount: `${acc.symbol}${amt.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
+      fee:            `${acc.symbol}${fee.toLocaleString()}`,
+      total:          `${acc.symbol}${(amt + fee).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
+      arrival:        '~1 Business Day',
+      isCrypto:       false,
+    }
+  }, [tab, contactAmount, contactCurrency, fiatAmount, cryptoAmount, isCrypto, activeWallet, fiatAccounts])
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
   function handleContactSelect(c) {
     setSelectedContact(c)
-    setPhoneRecipient(c.phone.replace(/\D/g, '').slice(-10))
-    setPhoneRecipientName(c.name)
-    toast.info('Recipient Selected', `${c.name} (${c.phone}) selected.`)
   }
 
-  function handleQrScanSuccess(scannedAddress, payeeName) {
-    if (channel === 'crypto') {
-      setCryptoAddress(scannedAddress)
+  function handleOpenReview() {
+    if (tab === 'contact') {
+      if (!selectedContact) return toast.error('No Recipient', 'Select a contact to send to.')
+      if (!contactAmount || parseFloat(contactAmount) <= 0) return toast.error('Invalid Amount', 'Enter a valid amount.')
+    } else if (isCrypto) {
+      if (!cryptoAddress) return toast.error('Missing Address', 'Enter the recipient wallet address.')
+      if (!cryptoAmount || parseFloat(cryptoAmount) <= 0) return toast.error('Invalid Amount', 'Enter a valid amount.')
     } else {
-      setPhoneRecipient(scannedAddress)
-      if (payeeName) setPhoneRecipientName(payeeName)
-    }
-  }
-
-  function handleOpenReview(e) {
-    e?.preventDefault?.()
-    if (channel === 'phone' && !phoneRecipient) {
-      toast.error('Missing Recipient', 'Please enter a recipient phone number.')
-      return
-    }
-    if (channel === 'bank' && (!accountNumber || !accountName)) {
-      toast.error('Missing Bank Details', 'Please complete the bank account information.')
-      return
-    }
-    if (channel === 'crypto' && (!cryptoAddress || !cryptoAmount)) {
-      toast.error('Missing Crypto Address', 'Please provide destination wallet address & amount.')
-      return
+      if (!accountNumber || accountNumber.length < 10) return toast.error('Invalid Account', 'Enter a valid 10-digit account number.')
+      if (!fiatAmount || parseFloat(fiatAmount) <= 0) return toast.error('Invalid Amount', 'Enter a valid amount.')
     }
     setIsReviewOpen(true)
   }
 
-  function handleProceedToPinAuth() {
+  function handleProceedToPin() {
     setIsReviewOpen(false)
-    setIsPinModalOpen(true)
+    setIsPinOpen(true)
   }
 
-  function handlePinAuthorized(code) {
-    setIsPinModalOpen(false)
+  function handlePinAuthorized() {
+    setIsPinOpen(false)
     setProcessing(true)
-
     setTimeout(() => {
       setProcessing(false)
-      if (channel === 'phone') {
-        const r = sendToContact({
-          recipient: { name: phoneRecipientName || 'Payee', phone: `${countryCode} ${phoneRecipient}` },
-          amount: parseFloat(amount),
-          currency,
-          remark,
+      if (tab === 'contact') {
+        const acc = fiatAccounts.find(a => a.code === contactCurrency) || fiatAccounts[0]
+        const r   = sendToContact({
+          recipient: { name: selectedContact.name, phone: selectedContact.phone },
+          amount:    parseFloat(contactAmount),
+          currency:  contactCurrency,
+          remark:    contactRemark,
         })
-        setReceipt({
-          ...r,
-          rail: 'UMEPAY Instant Universal Rail',
-          recipient: `${phoneRecipientName || 'Payee'} (${countryCode} ${phoneRecipient})`,
-        })
-      } else if (channel === 'bank') {
-        const r = sendToContact({
-          recipient: { name: accountName, phone: `${bankName} • ${accountNumber}` },
-          amount: parseFloat(amount),
-          currency,
-          remark,
-        })
-        setReceipt({
-          ...r,
-          rail: `Direct Bank Wire (${bankName})`,
-          recipient: `${accountName} (${bankName} - ${accountNumber.slice(-4)})`,
-        })
-      } else {
+        setReceipt({ ...r, rail: 'UMEPAY Instant Rail', recipient: `${selectedContact.name} (${selectedContact.phone})` })
+      } else if (isCrypto) {
         const r = sendToExternalWallet({
-          asset: cryptoAsset.code,
+          asset:   activeWallet.code,
           address: cryptoAddress,
           network,
-          amount: parseFloat(cryptoAmount),
-          remark,
+          amount:  parseFloat(cryptoAmount),
+          remark:  cryptoRemark,
         })
-        setReceipt({
-          ...r,
-          rail: `${network} Blockchain`,
-          recipient: `${cryptoAddress.slice(0, 10)}...${cryptoAddress.slice(-6)}`,
-          amount: cryptoAmount,
-          currency: cryptoAsset.code,
+        setReceipt({ ...r, rail: `${network} Blockchain`, recipient: `${cryptoAddress.slice(0, 10)}...${cryptoAddress.slice(-6)}` })
+      } else {
+        const r = sendToContact({
+          recipient: { name: accountName || resolvedName || 'Beneficiary', phone: `${bankName} • ${accountNumber}` },
+          amount:    parseFloat(fiatAmount),
+          currency:  activeWallet.code,
+          remark:    fiatRemark,
         })
+        setReceipt({ ...r, rail: `Bank Transfer (${bankName})`, recipient: `${resolvedName || accountName} (${bankName} - ${accountNumber.slice(-4)})` })
       }
-      toast.success('Transfer Dispatched!', 'Funds have been atomically settled.')
+      toast.success('Transfer Sent!', 'Your transfer has been dispatched.')
     }, 900)
   }
 
+  // ── Computed values for PIN modal ──────────────────────────────────────────
+  const pinTransferDetails = {
+    amountFormatted: breakdown.total,
+    recipientName:   tab === 'contact'
+      ? selectedContact?.name
+      : isCrypto
+        ? cryptoAddress?.slice(0, 16) + '...'
+        : accountName || resolvedName || 'Beneficiary',
+  }
+
+  // ── Fiat usdRate for equivalent display ────────────────────────────────────
+  const fiatUsdRate = useMemo(() => {
+    if (!activeWallet?.isCrypto) {
+      const acc = activeWallet?.raw
+      if (acc?.code === 'NGN') return acc.balance / acc.usdEquivalent
+      if (acc?.code === 'GBP') return 1 / 1.27
+      if (acc?.code === 'EUR') return 1 / 1.09
+      return 1
+    }
+    return null
+  }, [activeWallet])
+
+  const cryptoUsdPerUnit = useMemo(() => {
+    if (!activeWallet?.isCrypto) return null
+    const asset = activeWallet.raw
+    return asset.balance > 0 ? asset.usdEquivalent / asset.balance : 0
+  }, [activeWallet])
+
+  const networkOptions = isCrypto ? (CRYPTO_NETWORKS[activeWallet?.code] || []) : []
+
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <DashboardLayout title="Send">
-      {/* 1. Header Channel Selector */}
-      <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-black text-ink-900 tracking-tight">Send Payment</h1>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed sm:mt-0.5">
-              Instant multi-rail settlement across phone IDs, global bank accounts, and crypto addresses.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsQrScannerOpen(true)}
-            className="self-start sm:self-auto inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-ink-800 text-xs font-bold text-ink-900 shadow-xs transition-colors cursor-pointer"
-          >
-            <QrCode size={15} className="text-[#18224b]" />
-            <span>Scan QR Code</span>
-          </button>
-        </div>
+      <h1 className="text-2xl font-black text-ink-900 tracking-tight mb-6">Send Money</h1>
 
-        {/* Channels Segmented Pill Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60">
-          {CHANNELS.map((c) => {
-            const Icon = c.icon
-            const active = channel === c.id
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setChannel(c.id)}
-                className={`min-w-0 p-3 rounded-xl text-left transition-all cursor-pointer flex items-center gap-2.5 sm:gap-3 relative ${
-                  active
-                    ? 'bg-white text-ink-900 shadow-md ring-1 ring-slate-900/5'
-                    : 'text-slate-600 hover:bg-white/60'
-                }`}
-              >
-                <div
-                  className={`h-10 w-10 rounded-xl grid place-items-center shrink-0 transition-colors ${
-                    active ? 'bg-[#18224b] text-white shadow-sm' : 'bg-slate-200/70 text-slate-600'
-                  }`}
-                >
-                  <Icon size={18} strokeWidth={2.2} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                    <p className="text-xs font-extrabold truncate">{c.label}</p>
-                    <Badge variant={active ? 'primary' : 'neutral'} size="sm" className="self-start sm:self-auto shrink-0">
-                      {c.badge}
-                    </Badge>
-                  </div>
-                  <p className="text-[11px] text-slate-400 truncate mt-0.5">{c.sub}</p>
-                </div>
-              </button>
-            )
-          })}
-        </div>
+      {/* ── Tab bar ── */}
+      <div className="flex border-b border-slate-200 mb-6 gap-6">
+        {[
+          { id: 'contact',  label: 'Send to Contact'  },
+          { id: 'external', label: 'Send to External' },
+        ].map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={`pb-3 text-sm font-semibold transition-colors cursor-pointer ${
+              tab === id
+                ? 'text-ink-900 border-b-2 border-ink-900 -mb-px'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
-      {/* 2. Main Transfer Form & Side Breakdown */}
-      <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6 items-start">
-        {/* Left Card: Form */}
-        <div className="space-y-6">
-          {channel === 'phone' && (
-            <Card>
-              <CardHeader
-                title="Recipient Universal ID"
-                action={
-                  <Badge variant="success" size="sm" className="max-w-full">
-                    <ShieldCheck size={12} className="mr-1 inline" /> Verified Universal Directory
-                  </Badge>
-                }
-              />
+      {/* ── Two-column layout ── */}
+      <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Phone Number
-                  </label>
-                  <div className="flex items-center h-12 rounded-xl border border-slate-200 px-3 gap-2.5 focus-within:border-ink-800 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
-                    <CountryCodeDropdown
-                      value={countryCode}
-                      onChange={(val) => setCountryCode(val)}
+        {/* ════════════════════════════ LEFT PANEL ════════════════════════════ */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-card p-6 space-y-5">
+
+          {/* ── SEND TO CONTACT ── */}
+          {tab === 'contact' && (
+            <>
+              {/* Recent contacts pills */}
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Recent Contacts
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {recentContacts.map(c => (
+                    <ContactCard
+                      key={c.id}
+                      contact={c}
+                      selected={selectedContact?.id === c.id}
+                      onClick={handleContactSelect}
                     />
-                    <span className="h-5 w-px bg-slate-200" />
-                    <input
-                      type="tel"
-                      value={phoneRecipient}
-                      onChange={(e) => {
-                        setPhoneRecipient(e.target.value)
-                        setPhoneRecipientName('Verified Payee')
-                      }}
-                      placeholder="809 123 4567"
-                      className="w-full bg-transparent text-sm font-bold text-ink-900 outline-none"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Recipient verified tag */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/70 border border-emerald-100 text-xs text-emerald-900">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                    <div>
-                      <span className="font-bold">{phoneRecipientName || selectedContact?.name}</span>
-                      <span className="text-emerald-700 ml-1">({countryCode} {phoneRecipient})</span>
-                    </div>
-                  </div>
-                  <span className="font-bold text-[10px] uppercase bg-emerald-200/70 text-emerald-800 px-2 py-0.5 rounded-full">
-                    Active ID
-                  </span>
-                </div>
-
-                {/* Recent Contacts Grid */}
-                <div className="pt-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-                    Recent Verified Contacts
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {recentContacts.map((c) => (
-                      <ContactCard
-                        key={c.id}
-                        contact={c}
-                        selected={selectedContact?.id === c.id}
-                        onClick={handleContactSelect}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Search Contacts Directory */}
-                <div className="pt-2 border-t border-slate-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Directory Contacts
-                    </p>
-                    <span className="text-[11px] text-slate-400">{filteredContacts.length} contacts</span>
-                  </div>
-                  <Input
-                    icon={Search}
-                    placeholder="Filter saved beneficiaries by name or phone..."
-                    value={searchContactQuery}
-                    onChange={(e) => setSearchContactQuery(e.target.value)}
-                  />
-                  <div className="mt-2 max-h-48 overflow-y-auto divide-y divide-slate-100 rounded-xl border border-slate-100 bg-slate-50/40">
-                    {filteredContacts.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => handleContactSelect(c)}
-                        className="w-full flex items-center justify-between p-2.5 text-left hover:bg-slate-100/80 transition-colors cursor-pointer text-xs"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="h-7 w-7 rounded-full bg-ink-100 text-ink-800 font-bold text-[10px] grid place-items-center shrink-0">
-                            {c.initials}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-ink-900 truncate">{c.name}</p>
-                            <p className="text-[11px] text-slate-400 truncate">{c.phone}</p>
-                          </div>
-                        </div>
-                        <ChevronRight size={14} className="text-slate-300 shrink-0" />
-                      </button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
-            </Card>
-          )}
 
-          {channel === 'bank' && (
-            <Card>
-              <CardHeader
-                title="Direct Bank Rail Details"
-                action={
-                  <Badge variant="primary" size="sm">
-                    Direct Wire Clearance
-                  </Badge>
-                }
-              />
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Select Destination Financial Institution
-                  </label>
-                  <select
-                    value={bankName}
-                    onChange={(e) => setBankName(e.target.value)}
-                    className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 bg-white outline-none focus:border-ink-800 focus:ring-2 focus:ring-ink-100"
-                  >
-                    {POPULAR_BANKS.map((b) => (
-                      <option key={b.name} value={b.name}>
-                        {b.name} ({b.country})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      Account / IBAN Number
-                    </label>
-                    <input
-                      type="text"
-                      value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      placeholder="0123456789"
-                      className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 outline-none focus:border-ink-800 focus:ring-2 focus:ring-ink-100 font-mono"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      Routing Number / SWIFT
-                    </label>
-                    <input
-                      type="text"
-                      value={routingNumber}
-                      onChange={(e) => setRoutingNumber(e.target.value)}
-                      placeholder="021000021"
-                      className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 outline-none focus:border-ink-800 focus:ring-2 focus:ring-ink-100 font-mono"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Account Beneficiary Name
-                  </label>
+              {/* Search contacts */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="relative mb-2">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)}
-                    placeholder="e.g. Alexander Cooper"
-                    className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 outline-none focus:border-ink-800 focus:ring-2 focus:ring-ink-100"
-                    required
+                    value={searchContact}
+                    onChange={e => setSearchContact(e.target.value)}
+                    placeholder="Search contacts by name or phone..."
+                    className="w-full h-10 rounded-xl border border-slate-200 pl-9 pr-3 text-sm font-medium text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100"
                   />
                 </div>
-
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-blue-50/80 border border-blue-100 text-xs text-blue-900">
-                  <ShieldCheck size={16} className="text-blue-600 shrink-0" />
-                  <span>Account name validated via Interswitch &amp; FedNow routing validation.</span>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          {channel === 'crypto' && (
-            <Card>
-              <CardHeader
-                title="Blockchain &amp; Smart Contract Destination"
-                action={
-                  <button
-                    type="button"
-                    onClick={() => setIsQrScannerOpen(true)}
-                    className="flex items-center gap-1.5 text-xs font-bold text-ink-800 hover:text-black cursor-pointer"
-                  >
-                    <QrCode size={14} /> Scan Address
-                  </button>
-                }
-              />
-
-              <div className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      Select Crypto Asset
-                    </label>
-                    <select
-                      value={cryptoAsset.code}
-                      onChange={(e) =>
-                        setCryptoAsset(digitalAssets.find((a) => a.code === e.target.value))
-                      }
-                      className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 bg-white outline-none focus:border-ink-800"
-                    >
-                      {digitalAssets.map((a) => (
-                        <option key={a.code} value={a.code}>
-                          {a.code} — {a.name} ({a.balance} Available)
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      Network Rail
-                    </label>
-                    <select
-                      value={network}
-                      onChange={(e) => setNetwork(e.target.value)}
-                      className="w-full h-12 rounded-xl border border-slate-200 px-3 text-sm font-bold text-ink-900 bg-white outline-none focus:border-ink-800"
-                    >
-                      <option>Tron (TRC-20)</option>
-                      <option>Ethereum (ERC-20)</option>
-                      <option>Bitcoin SegWit Mainnet</option>
-                      <option>Solana Network</option>
-                      <option>Polygon POS</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Recipient Wallet Address / ENS
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={cryptoAddress}
-                      onChange={(e) => setCryptoAddress(e.target.value)}
-                      placeholder="0x71C8657daB7926862a610e4b854378A8696F1F9e or satoshi.eth"
-                      className="w-full h-12 rounded-xl border border-slate-200 pl-3 pr-10 text-xs font-mono font-bold text-ink-900 outline-none focus:border-ink-800"
-                      required
-                    />
+                <div className="max-h-44 overflow-y-auto divide-y divide-slate-100 rounded-xl border border-slate-100">
+                  {filteredContacts.map(c => (
                     <button
+                      key={c.id}
                       type="button"
-                      onClick={() => setIsQrScannerOpen(true)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-ink-900 cursor-pointer"
+                      onClick={() => handleContactSelect(c)}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-slate-50 transition-colors cursor-pointer text-xs ${selectedContact?.id === c.id ? 'bg-ink-50' : ''}`}
                     >
-                      <QrCode size={16} />
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="h-7 w-7 rounded-full bg-ink-100 text-ink-800 font-bold text-[10px] grid place-items-center shrink-0">
+                          {c.initials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-ink-900 truncate">{c.name}</p>
+                          <p className="text-[11px] text-slate-400 truncate">{c.phone}</p>
+                        </div>
+                      </div>
+                      {selectedContact?.id === c.id
+                        ? <Check size={14} className="text-emerald-500 shrink-0" />
+                        : <ChevronRight size={14} className="text-slate-300 shrink-0" />
+                      }
                     </button>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-                  <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                  <p className="leading-relaxed">
-                    Always confirm the selected transfer network (<span className="font-bold">{network}</span>) matches the recipient wallet format. Cross-chain transfers cannot be reversed.
-                  </p>
+                  ))}
                 </div>
               </div>
-            </Card>
-          )}
 
-          {/* Amount & Remark Section */}
-          <Card>
-            <CardHeader
-              title="Transfer Amount &amp; Currency"
-              action={
-                <span className="text-xs text-slate-400">
-                  Available: <span className="font-bold text-ink-900">{activeAccount.symbol}{activeAccount.balance.toLocaleString()} {activeAccount.code}</span>
-                </span>
-              }
-            />
-
-            <div className="space-y-4">
-              {channel === 'crypto' ? (
-                <div>
-                  <div className="flex items-center rounded-2xl border border-slate-200 px-4 h-16 focus-within:border-ink-800 focus-within:ring-2 focus-within:ring-ink-100">
-                    <input
-                      type="number"
-                      value={cryptoAmount}
-                      onChange={(e) => setCryptoAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="flex-1 min-w-0 text-3xl font-black text-ink-900 outline-none"
-                    />
-                    <span className="text-sm font-extrabold text-ink-800 px-3 py-1 bg-slate-100 rounded-xl">
-                      {cryptoAsset.code}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1.5">
-                    Estimated Value: ~${(parseFloat(cryptoAmount || 0) * (cryptoAsset.usdEquivalent / cryptoAsset.balance || 1)).toFixed(2)} USD
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-center rounded-2xl border border-slate-200 px-4 h-16 focus-within:border-ink-800 focus-within:ring-2 focus-within:ring-ink-100">
-                    <span className="text-2xl font-bold text-slate-400 mr-2">{activeAccount.symbol}</span>
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="flex-1 min-w-0 text-3xl font-black text-ink-900 outline-none"
-                    />
-                    <select
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      className="text-sm font-extrabold text-ink-900 bg-slate-100 rounded-xl px-3 py-2 outline-none cursor-pointer"
-                    >
-                      {fiatAccounts.map((a) => (
-                        <option key={a.code} value={a.code}>
-                          {a.code}
-                        </option>
-                      ))}
-                    </select>
+              {/* Selected recipient chip */}
+              {selectedContact && (
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                  <div className="text-xs">
+                    <span className="font-bold text-ink-900">{selectedContact.name}</span>
+                    <span className="text-slate-500 ml-1">({selectedContact.phone})</span>
                   </div>
                 </div>
               )}
 
-              {/* Quick Amount Chips */}
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {QUICK_AMOUNTS.map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => {
-                      if (channel === 'crypto') setCryptoAmount(String(amt))
-                      else setAmount(String(amt))
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
-                  >
-                    +${amt}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (channel === 'crypto') setCryptoAmount(String(cryptoAsset.balance))
-                    else setAmount(String(activeAccount.balance))
+              {/* Amount */}
+              <Field label="Transfer Amount">
+                <FiatAmountInput
+                  symbol={fiatAccounts.find(a => a.code === contactCurrency)?.symbol || '$'}
+                  value={contactAmount}
+                  onChange={e => setContactAmount(e.target.value)}
+                  currency={contactCurrency}
+                  usdRate={contactCurrency === 'NGN' ? 1590 : contactCurrency === 'GBP' ? 0.79 : 1}
+                  onMax={() => {
+                    const acc = fiatAccounts.find(a => a.code === contactCurrency) || fiatAccounts[0]
+                    setContactAmount(String(acc.balance))
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-ink-900 text-white text-xs font-extrabold hover:bg-ink-800 transition-colors cursor-pointer"
-                >
-                  USE MAX
-                </button>
-              </div>
+                />
+              </Field>
 
-              {/* Purpose / Remark */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                  Payment Purpose / Reference Note
-                </label>
+              {/* Currency picker */}
+              <Field label="Currency">
+                <StyledSelect value={contactCurrency} onChange={e => setContactCurrency(e.target.value)}>
+                  {fiatAccounts.map(a => (
+                    <option key={a.code} value={a.code}>{a.code} — {a.name}</option>
+                  ))}
+                </StyledSelect>
+              </Field>
+
+              {/* Remark */}
+              <Field label="Remark">
                 <input
                   type="text"
-                  value={remark}
-                  onChange={(e) => setRemark(e.target.value)}
-                  placeholder="e.g. Invoice settlement, family support, contractor payout"
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-ink-900 outline-none focus:border-ink-800"
+                  value={contactRemark}
+                  onChange={e => setContactRemark(e.target.value)}
+                  placeholder="Add remark here"
+                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm font-medium text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100"
                 />
-              </div>
-            </div>
-          </Card>
+              </Field>
+            </>
+          )}
+
+          {/* ── SEND TO EXTERNAL ── */}
+          {tab === 'external' && (
+            <>
+              {/* Source Wallet */}
+              <Field label="Source Wallet">
+                <WalletPicker
+                  wallets={wallets}
+                  selectedId={walletId}
+                  onChange={handleWalletChange}
+                />
+              </Field>
+
+              {/* ── CRYPTO FLOW ── */}
+              {isCrypto && (
+                <>
+                  {/* Recipient Wallet Address */}
+                  <Field label="Recipient Wallet Address">
+                    <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-white px-3 gap-2 focus-within:border-ink-700 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
+                      <input
+                        type="text"
+                        value={cryptoAddress}
+                        onChange={e => setCryptoAddress(e.target.value)}
+                        placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493..."
+                        className="flex-1 min-w-0 text-xs font-mono font-semibold text-ink-900 outline-none bg-transparent"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard?.readText?.().then(t => setCryptoAddress(t)).catch(() => {})
+                        }}
+                        className="shrink-0 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-ink-800 cursor-pointer"
+                      >
+                        Paste
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsQrOpen(true)}
+                        className="shrink-0 text-slate-400 hover:text-ink-900 cursor-pointer"
+                        aria-label="Scan QR code"
+                      >
+                        <Grid2X2 size={16} />
+                      </button>
+                    </div>
+                  </Field>
+
+                  {/* Transfer Network */}
+                  <Field label="Transfer Network">
+                    <StyledSelect
+                      value={network}
+                      onChange={e => setNetwork(e.target.value)}
+                    >
+                      {networkOptions.map(n => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </StyledSelect>
+                  </Field>
+
+                  {/* Transfer Amount */}
+                  <Field label="Transfer Amount">
+                    <CryptoAmountInput
+                      value={cryptoAmount}
+                      onChange={e => setCryptoAmount(e.target.value)}
+                      code={activeWallet.code}
+                      usdPerUnit={cryptoUsdPerUnit}
+                      onMax={() => setCryptoAmount(String(activeWallet.raw.balance))}
+                    />
+                  </Field>
+
+                  {/* Remark */}
+                  <Field label="Remark">
+                    <input
+                      type="text"
+                      value={cryptoRemark}
+                      onChange={e => setCryptoRemark(e.target.value)}
+                      placeholder="Add remark here"
+                      className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm font-medium text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100"
+                    />
+                  </Field>
+                </>
+              )}
+
+              {/* ── FIAT BANK TRANSFER FLOW ── */}
+              {!isCrypto && (
+                <>
+                  {/* Recipient Details heading */}
+                  <p className="text-base font-bold text-ink-900 -mb-1">Recipient Details</p>
+
+                  {/* Bank Name */}
+                  <Field label="Bank Name">
+                    <StyledSelect value={bankName} onChange={e => { setBankName(e.target.value); setAccountName(''); setAccountNumber('') }}>
+                      {NIGERIAN_BANKS.map(b => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </StyledSelect>
+                  </Field>
+
+                  {/* Account Number */}
+                  <Field label="Account Number">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={10}
+                      value={accountNumber}
+                      onChange={e => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+                      placeholder="0123456789"
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm font-mono font-semibold text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100"
+                    />
+                    {/* Resolved account name */}
+                    {resolvedName && (
+                      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-emerald-600 font-semibold">
+                        <Check size={13} /> {resolvedName}
+                      </div>
+                    )}
+                  </Field>
+
+                  {/* Transfer Amount */}
+                  <Field label="Transfer Amount">
+                    <FiatAmountInput
+                      symbol={activeWallet.raw?.symbol || '₦'}
+                      value={fiatAmount}
+                      onChange={e => setFiatAmount(e.target.value)}
+                      currency={activeWallet.code}
+                      usdRate={fiatUsdRate}
+                      onMax={() => setFiatAmount(String(activeWallet.raw?.balance || 0))}
+                    />
+                  </Field>
+
+                  {/* Remark */}
+                  <Field label="Remark">
+                    <input
+                      type="text"
+                      value={fiatRemark}
+                      onChange={e => setFiatRemark(e.target.value)}
+                      placeholder="Add remark here"
+                      className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm font-medium text-ink-900 outline-none focus:border-ink-700 focus:ring-2 focus:ring-ink-100"
+                    />
+                  </Field>
+                </>
+              )}
+            </>
+          )}
         </div>
 
-        {/* Right Column: Transaction Summary & Authorization */}
-        <div className="space-y-5 sticky top-24">
-          <Card className="shadow-lg border-slate-200/80">
-            <CardHeader
-              title="Settlement Summary"
-              action={
-                <span className="flex items-center gap-1 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  <Sparkles size={12} /> Instant Rail
-                </span>
-              }
-            />
+        {/* ════════════════════════════ RIGHT PANEL ════════════════════════════ */}
+        <div className="space-y-4">
 
-            <div className="space-y-3.5 text-xs">
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-400">Transfer Channel</span>
-                <span className="font-bold text-ink-900">
-                  {channel === 'phone' ? 'Universal Phone ID' : channel === 'bank' ? 'Direct Bank Wire' : 'Multi-Chain Crypto'}
-                </span>
+          {/* Security warning — shown for External tab only */}
+          {tab === 'external' && (
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200">
+              <ShieldAlert size={18} className="text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-red-700 mb-1">Critical Security Warning</p>
+                <p className="text-xs text-red-600 leading-relaxed">
+                  External {isCrypto ? 'blockchain' : 'bank'} transfers are absolutely irreversible.
+                  Please verify the {isCrypto ? 'destination address and the selected network' : 'bank name and account number'} multiple times before review.
+                </p>
               </div>
+            </div>
+          )}
 
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-400">Destination</span>
-                <span className="font-bold text-ink-900 truncate max-w-[180px]">
-                  {channel === 'phone'
-                    ? `${phoneRecipientName} (${countryCode} ${phoneRecipient})`
-                    : channel === 'bank'
-                    ? `${accountName} (${bankName})`
-                    : `${cryptoAddress.slice(0, 10)}...`}
-                </span>
-              </div>
+          {/* Transaction Breakdown */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-card p-5 space-y-4">
+            <h3 className="text-sm font-bold text-ink-900">Transaction Breakdown</h3>
 
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-400">Debit Amount</span>
-                <span className="font-black text-ink-900 text-sm">
-                  {channel === 'crypto' ? `${cryptoAmount} ${cryptoAsset.code}` : `${activeAccount.symbol}${parseFloat(amount || 0).toLocaleString()} ${currency}`}
-                </span>
+            <div className="space-y-2.5 text-sm">
+              <div className="flex justify-between text-slate-500">
+                <span>Transfer Amount</span>
+                <span className="font-semibold text-ink-900">{breakdown.transferAmount}</span>
               </div>
+              <div className="flex justify-between text-slate-500">
+                <span>{isCrypto && tab === 'external' ? 'Network Fee' : 'Bank Transfer Fee'}</span>
+                <span className="font-semibold text-ink-900">{breakdown.fee}</span>
+              </div>
+            </div>
 
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-400">Network &amp; Platform Fee</span>
-                <span className="font-bold text-emerald-600">$0.00 (Zero Fee Rail)</span>
-              </div>
+            <div className="border-t border-slate-100 pt-3 flex justify-between items-baseline">
+              <span className="text-sm font-bold text-ink-900">
+                {tab === 'external' && isCrypto ? 'Total Debit Amount' : 'Total Debit'}
+              </span>
+              <span className="text-xl font-black text-ink-900">{breakdown.total}</span>
+            </div>
 
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-400">Expected Clearance</span>
-                <span className="font-bold text-ink-900">~1.2 Seconds (Real-Time)</span>
-              </div>
-
-              <div className="flex justify-between py-1">
-                <span className="text-slate-400">AML &amp; Fraud Clearance</span>
-                <span className="font-bold text-emerald-600 flex items-center gap-1">
-                  <ShieldCheck size={13} /> Passed
-                </span>
-              </div>
+            <div className="flex justify-between text-xs text-slate-400">
+              <span>Expected Arrival</span>
+              <span className="font-semibold text-ink-900">{breakdown.arrival}</span>
             </div>
 
             <Button
               fullWidth
               size="lg"
-              className="mt-6 shadow-md"
+              className="mt-1"
               icon={ArrowRight}
               iconPosition="right"
               onClick={handleOpenReview}
             >
-              Review &amp; Authorize Transfer
+              Review Transfer
             </Button>
-          </Card>
-
-          {/* Security Compliance Guarantee */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-500 space-y-2">
-            <div className="flex items-center gap-2 text-ink-900 font-bold">
-              <Lock size={14} className="text-[#18224b]" />
-              <span>Multi-Signature Ledger Protection</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">
-              Every outbound transaction requires 4-digit PIN / biometric authorization and is broadcast via encrypted liquidity pools.
-            </p>
           </div>
         </div>
       </div>
 
-      {/* Review Modal */}
-      <Modal open={isReviewOpen} onClose={() => setIsReviewOpen(false)} size="sm">
-        <ModalHeader title="Confirm Transfer Details" onClose={() => setIsReviewOpen(false)} />
-        <div className="p-6 pt-3 space-y-4">
-          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 space-y-2.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Recipient</span>
-              <span className="font-bold text-ink-900">
-                {channel === 'phone' ? phoneRecipientName : channel === 'bank' ? accountName : cryptoAddress.slice(0, 14)}
-              </span>
+      {/* ── Review Confirmation Modal ── */}
+      {isReviewOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+          <div className="bg-white rounded-2xl shadow-popover w-full max-w-sm p-6 animate-scale-in">
+            <h2 className="text-base font-bold text-ink-900 mb-4">Confirm Transfer Details</h2>
+            <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 space-y-2.5 text-xs mb-4">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Recipient</span>
+                <span className="font-bold text-ink-900">
+                  {tab === 'contact'
+                    ? selectedContact?.name
+                    : isCrypto
+                      ? `${cryptoAddress.slice(0, 14)}...`
+                      : resolvedName || accountName || 'Beneficiary'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Total Amount</span>
+                <span className="font-extrabold text-ink-900 text-sm">{breakdown.total}</span>
+              </div>
+              {tab === 'external' && isCrypto && (
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Network</span>
+                  <span className="font-bold text-ink-900">{network}</span>
+                </div>
+              )}
+              {tab === 'external' && !isCrypto && (
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Bank</span>
+                  <span className="font-bold text-ink-900">{bankName}</span>
+                </div>
+              )}
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Total Amount</span>
-              <span className="font-extrabold text-ink-900 text-sm">
-                {channel === 'crypto' ? `${cryptoAmount} ${cryptoAsset.code}` : `$${amount} ${currency}`}
-              </span>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" onClick={() => setIsReviewOpen(false)}>Back</Button>
+              <Button onClick={handleProceedToPin}>Authorize PIN →</Button>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Transfer Speed</span>
-              <span className="font-bold text-emerald-600">Atomic Real-Time</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <Button variant="outline" onClick={() => setIsReviewOpen(false)}>
-              Back
-            </Button>
-            <Button onClick={handleProceedToPinAuth}>
-              Authorize PIN →
-            </Button>
           </div>
         </div>
-      </Modal>
+      )}
 
-      {/* PIN Security Modal */}
+      {/* ── PIN Modal ── */}
       <PinAuthModal
-        open={isPinModalOpen}
-        onClose={() => setIsPinModalOpen(false)}
+        open={isPinOpen}
+        onClose={() => setIsPinOpen(false)}
         onAuthorized={handlePinAuthorized}
-        transferDetails={{
-          amountFormatted: channel === 'crypto' ? `${cryptoAmount} ${cryptoAsset.code}` : `${activeAccount.symbol}${amount} ${currency}`,
-          recipientName: channel === 'phone' ? phoneRecipientName : channel === 'bank' ? accountName : 'Crypto Recipient',
-        }}
+        transferDetails={pinTransferDetails}
         loading={processing}
       />
 
-      {/* QR Scanner Modal */}
+      {/* ── QR Scanner ── */}
       <QrScannerModal
-        open={isQrScannerOpen}
-        onClose={() => setIsQrScannerOpen(false)}
-        onScanSuccess={handleQrScanSuccess}
+        open={isQrOpen}
+        onClose={() => setIsQrOpen(false)}
+        onScanSuccess={(addr) => { setCryptoAddress(addr); setIsQrOpen(false) }}
       />
 
-      {/* Official Receipt Modal */}
+      {/* ── Receipt ── */}
       <ProfessionalReceiptModal
         open={Boolean(receipt)}
         onClose={() => setReceipt(null)}
         receipt={receipt}
-        onDone={() => {
-          setReceipt(null)
-          navigate('/dashboard')
-        }}
+        onDone={() => { setReceipt(null); navigate('/dashboard') }}
       />
     </DashboardLayout>
   )
