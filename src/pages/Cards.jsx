@@ -56,6 +56,30 @@ export default function Cards() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Unverified KYC Warning Banner */}
+          {!user.kycVerified && (
+            <div className="rounded-2xl bg-amber-500/10 border border-amber-300 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900">Personal Tier 2 Required for Virtual Cards</h3>
+                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                    Virtual card issuance and spending require verified identity. Complete KYC in less than 2 minutes to issue unlimited multi-currency cards.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                to="/kyc"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shrink-0 transition-colors shadow-xs"
+              >
+                <span>Verify Identity Now</span>
+              </Link>
+            </div>
+          )}
+
           {/* Top Summary Bar matching screenshot */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:px-6 sm:py-3.5 rounded-2xl border border-slate-100 shadow-xs">
             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500">
