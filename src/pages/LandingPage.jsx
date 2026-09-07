@@ -4,36 +4,26 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
-  ChevronDown,
-  CreditCard,
-  Globe2,
   Lock,
   Menu,
   Phone,
   Send,
   ShieldCheck,
   Smile,
-  Sparkles,
   Star,
   UserCheck,
-  Wallet,
   X,
-  Zap,
 } from 'lucide-react'
-import Modal, { ModalHeader } from '../components/ui/Modal.jsx'
-import Button from '../components/ui/Button.jsx'
 import CountryCodeDropdown from '../components/common/CountryCodeDropdown.jsx'
 import SplashScreen from '../components/common/SplashScreen.jsx'
 import LandingHeroDiagram from '../components/landing/LandingHeroDiagram.jsx'
 import LandingVirtualCard from '../components/landing/LandingVirtualCard.jsx'
-import { useApp } from '../context/AppContext.jsx'
-import { useToast } from '../context/ToastContext.jsx'
 
 const navLinks = [
   { label: 'Multi-Asset Wallet', href: '#assets' },
   { label: 'Virtual Cards', href: '#card' },
   { label: 'Send/Receive', href: '#routing' },
-  { label: 'Exchange', href: '#exchange' },
+  { label: 'Exchange', href: '#assets' },
 ]
 
 const steps = [
@@ -162,8 +152,6 @@ const stats = [
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const toast = useToast()
-  const { user } = useApp()
 
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('umepay_intro_shown')
@@ -172,9 +160,6 @@ export default function LandingPage() {
   const [heroPhone, setHeroPhone] = useState('')
   const [ctaPhone, setCtaPhone] = useState('')
   const [countryCode, setCountryCode] = useState('+1')
-  const [isSignInOpen, setIsSignInOpen] = useState(false)
-  const [signInPhone, setSignInPhone] = useState('812 345 6789')
-  const [signingIn, setSigningIn] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   function scrollToSection(href) {
@@ -189,40 +174,20 @@ export default function LandingPage() {
 
   function handleHeroSubmit(e) {
     e?.preventDefault?.()
-    navigate('/register', { state: { phone: heroPhone || '812 345 6789' } })
+    navigate('/onboarding', { state: { phone: heroPhone || '812 345 6789' } })
   }
 
   function handleCtaSubmit(e) {
     e?.preventDefault?.()
-    navigate('/register', { state: { phone: ctaPhone || '812 345 6789' } })
-  }
-
-  function handleSignInSubmit(e) {
-    e?.preventDefault?.()
-    setSigningIn(true)
-    setTimeout(() => {
-      setSigningIn(false)
-      setIsSignInOpen(false)
-      navigate('/onboarding/verify', { state: { phone: signInPhone, mode: 'signin' } })
-    }, 400)
-  }
-
-  function handleQuickLogin() {
-    setSigningIn(true)
-    setTimeout(() => {
-      setSigningIn(false)
-      setIsSignInOpen(false)
-      toast.success('Signed In Successfully', `Welcome back, ${user.name}!`)
-      navigate('/dashboard')
-    }, 500)
+    navigate('/onboarding', { state: { phone: ctaPhone || '812 345 6789' } })
   }
 
   return (
     <div className="bg-white text-[#0F172A] font-sans antialiased selection:bg-amber-100 selection:text-amber-900 min-h-screen">
-      {/* Brand Logo Intro Splash Screen */}
+      {/* Brand Intro Splash Screen */}
       {showSplash && (
         <SplashScreen
-          duration={3000}
+          duration={2500}
           onFinish={() => {
             setShowSplash(false)
             sessionStorage.setItem('umepay_intro_shown', 'true')
@@ -254,15 +219,14 @@ export default function LandingPage() {
             ))}
           </nav>
 
-          {/* Desktop Auth Action Buttons */}
+          {/* Clean Desktop Auth Links */}
           <div className="hidden sm:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsSignInOpen(true)}
-              className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-950 px-3.5 py-2 transition-colors cursor-pointer"
+            <Link
+              to="/login"
+              className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-950 px-4 py-2 transition-colors cursor-pointer"
             >
               Sign In
-            </button>
+            </Link>
             <Link
               to="/register"
               className="bg-[#18224b] hover:bg-[#0f172a] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-1.5"
@@ -273,13 +237,12 @@ export default function LandingPage() {
 
           {/* Mobile Menu Trigger */}
           <div className="flex sm:hidden items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsSignInOpen(true)}
-              className="text-xs font-bold text-slate-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-100"
+            <Link
+              to="/login"
+              className="text-xs font-bold text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100"
             >
               Sign In
-            </button>
+            </Link>
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -315,6 +278,13 @@ export default function LandingPage() {
               >
                 <span>Create Free Account</span>
                 <ArrowRight size={15} />
+              </Link>
+              <Link
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center py-2.5 px-4 rounded-xl border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-50 transition-colors"
+              >
+                Sign In
               </Link>
             </div>
           </div>
@@ -364,7 +334,7 @@ export default function LandingPage() {
               </button>
             </form>
 
-            {/* Feature Checkmarks Under Input */}
+            {/* Feature Checkmarks */}
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
               <span className="flex items-center gap-1.5">
                 <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Bank-grade 256-bit
@@ -398,7 +368,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
-            {steps.map((s, idx) => (
+            {steps.map((s) => (
               <div key={s.n} className="relative bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs hover:shadow-md transition-shadow group">
                 <div className="flex items-center justify-between mb-5">
                   <div className={`h-12 w-12 rounded-2xl ${s.iconBg} grid place-items-center shadow-xs group-hover:scale-110 transition-transform`}>
@@ -648,79 +618,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* Interactive Sign In Modal */}
-      <Modal open={isSignInOpen} onClose={() => setIsSignInOpen(false)} size="sm">
-        <ModalHeader title="Sign In to UMEPAY" onClose={() => setIsSignInOpen(false)} />
-        <div className="p-6 space-y-4">
-          <p className="text-xs text-slate-500">
-            Enter your registered phone number or use Fast Sign In to access your verified dashboard.
-          </p>
-
-          <form onSubmit={handleSignInSubmit} className="space-y-3">
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                Phone Number
-              </label>
-              <div className="flex items-center h-11 rounded-xl border border-slate-200 px-3 gap-2 focus-within:border-[#18224b] focus-within:ring-2 focus-within:ring-[#18224b]/10">
-                <span className="text-xs font-bold text-slate-700">🇳🇬 +234</span>
-                <span className="h-4 w-px bg-slate-200" />
-                <input
-                  type="tel"
-                  value={signInPhone}
-                  onChange={(e) => setSignInPhone(e.target.value)}
-                  placeholder="812 345 6789"
-                  className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none"
-                  required
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              fullWidth
-              loading={signingIn}
-              icon={ArrowRight}
-              iconPosition="right"
-            >
-              Continue with OTP
-            </Button>
-          </form>
-
-          <div className="pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={handleQuickLogin}
-              disabled={signingIn}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
-            >
-              <Sparkles size={14} className="text-amber-400" />
-              <span>⚡ Fast Sign In ({user?.name || 'Alexander Cooper'})</span>
-            </button>
-          </div>
-
-          <div className="text-center pt-1 space-y-1">
-            <div>
-              <Link
-                to="/register"
-                onClick={() => setIsSignInOpen(false)}
-                className="text-xs font-semibold text-[#18224b] hover:underline cursor-pointer"
-              >
-                Don't have an account? Create one
-              </Link>
-            </div>
-            <div>
-              <Link
-                to="/login"
-                onClick={() => setIsSignInOpen(false)}
-                className="text-xs font-bold text-slate-500 hover:text-slate-900 cursor-pointer"
-              >
-                Go to Full Log In Page →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Modal>
     </div>
   )
 }

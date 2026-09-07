@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Check, CheckCircle2, Zap, X } from 'lucide-react'
+import { Check, CheckCircle2, Zap, X, ShieldAlert, ArrowRight, ShieldCheck } from 'lucide-react'
 import DashboardLayout from '../components/layout/DashboardLayout.jsx'
 import VirtualCardVisual from '../components/cards/VirtualCardVisual.jsx'
 import { CurrencyBadge } from '../components/common/RealIcons.jsx'
@@ -45,7 +45,7 @@ const currencyOptions = [
 export default function CreateCard() {
   const navigate = useNavigate()
   const toast = useToast()
-  const { user, createCard } = useApp()
+  const { user, createCard, updateUser } = useApp()
 
   const [step, setStep] = useState(1) // 1: Select Currency, 2: Configure Card
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
@@ -88,6 +88,77 @@ export default function CreateCard() {
       setCreatedModalOpen(true)
       toast.success('Card Created', 'Your new virtual card is ready to use instantly.')
     }, 600)
+  }
+
+  function handleInstantDemoVerify() {
+    updateUser({
+      kycVerified: true,
+      tier: 'Personal Tier 2',
+      monthlyCardLimit: 15000,
+      monthlyCardRemaining: 15000,
+      dailySendLimit: 50000,
+    })
+    toast.success('Demo Account Verified', 'Personal Tier 2 privileges unlocked!')
+  }
+
+  if (!user.kycVerified) {
+    return (
+      <DashboardLayout title="Create Virtual Card">
+        <div className="max-w-xl mx-auto py-8 sm:py-12 animate-fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-10 shadow-sm text-center">
+            <div className="h-16 w-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto mb-6 shadow-xs">
+              <ShieldAlert size={32} />
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-3">
+              Identity Verification Required
+            </span>
+
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-2">
+              Unlock Virtual Cards with KYC
+            </h2>
+
+            <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed mb-8">
+              In accordance with financial compliance and card issuance standards, virtual Visa debit cards are available exclusively to <strong>Personal Tier 2</strong> verified accounts.
+            </p>
+
+            <div className="bg-slate-50 rounded-2xl p-4 mb-8 text-left space-y-2.5 border border-slate-100">
+              <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-700">
+                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                <span>Issue up to 10 multi-currency cards (USD, EUR, GBP, NGN)</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-700">
+                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                <span>$15,000 monthly spending limit</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-700">
+                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                <span>Compatible with Apple Pay &amp; Google Pay</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Link
+                to="/kyc"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#18224b] hover:bg-[#111936] text-white py-3.5 px-6 rounded-xl font-bold text-sm shadow-sm transition-all"
+              >
+                <span>Start KYC Verification (2 Mins)</span>
+                <ArrowRight size={16} />
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleInstantDemoVerify}
+                className="w-full inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 py-3 px-6 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
+              >
+                <Zap size={14} className="text-amber-500" />
+                <span>⚡ Instant Verify Demo Account</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (

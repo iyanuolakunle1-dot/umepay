@@ -305,6 +305,24 @@ export default function ProfileSettings() {
             >
               <span>👑 Upgrade Tier / View Limits ($250k+)</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = !user.kycVerified
+                updateUser({
+                  kycVerified: nextState,
+                  tier: nextState ? 'Personal Tier 2' : 'Personal Tier 1 (Unverified)',
+                  dailySendLimit: nextState ? 50000 : 500,
+                  monthlyCardLimit: nextState ? 15000 : 0,
+                  monthlyCardRemaining: nextState ? 15000 : 0,
+                })
+                toast.info('KYC State Toggled', `User is now ${nextState ? 'Tier 2 (Verified)' : 'Tier 1 (Unverified)'}`)
+              }}
+              className="w-full mt-2 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-[11px] transition-colors cursor-pointer"
+            >
+              <span>🔄 Toggle KYC State ({user.kycVerified ? 'Verified' : 'Unverified'})</span>
+            </button>
           </div>
         </Card>
 
