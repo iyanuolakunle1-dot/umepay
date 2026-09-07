@@ -21,23 +21,25 @@ export default function AccountDetailModal({ account, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
-      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-100 relative">
+      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
         {/* Header matching screenshot */}
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span
-              className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+              className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] tracking-wider uppercase ${
                 account.code === 'BTC'
-                  ? 'bg-amber-100/70 text-amber-700'
+                  ? 'bg-amber-100/90 text-amber-800'
                   : account.code === 'ETH'
-                  ? 'bg-indigo-100/70 text-indigo-700'
-                  : 'bg-emerald-100/70 text-emerald-700'
+                  ? 'bg-indigo-100/90 text-indigo-800'
+                  : account.code === 'USDT' || account.code === 'USDC'
+                  ? 'bg-emerald-100/90 text-emerald-800'
+                  : 'bg-slate-100 text-slate-800'
               }`}
             >
               {account.code}
             </span>
             <h3 className="font-bold text-slate-900 text-base">
-              {account.name} Account
+              {account.name?.includes('(') ? account.name : `${account.name} (${account.code})`} Account
             </h3>
           </div>
 
@@ -51,17 +53,16 @@ export default function AccountDetailModal({ account, onClose }) {
         </div>
 
         {/* Gradient Banner matching screenshot */}
-        <div className="rounded-2xl p-5 sm:p-6 mb-5 text-white bg-gradient-to-tr from-[#1E0099] via-[#2A00D0] to-[#4012E8] shadow-lg relative overflow-hidden">
-          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">
+        <div className="rounded-2xl p-6 mb-5 text-white bg-gradient-to-r from-[#0E0348] via-[#1A066E] to-[#26008E] shadow-lg relative overflow-hidden">
+          <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1.5">
             TOTAL WALLET BALANCE
           </p>
-          <p className="text-3xl font-extrabold tracking-tight text-white mb-0.5">
+          <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-1 font-mono">
             {account.code === 'BTC' ? '₿' : account.symbol || ''}
-            {account.balance.toLocaleString(undefined, { maximumFractionDigits: 6 })}{' '}
-            {account.code}
+            {account.balance.toLocaleString(undefined, { maximumFractionDigits: 6 })} {account.code}
           </p>
-          <p className="text-xs font-semibold text-emerald-300">
+          <p className="text-xs font-bold text-emerald-400">
             ≈ ${(account.usdEquivalent || 405.0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
           </p>
         </div>
@@ -82,17 +83,17 @@ export default function AccountDetailModal({ account, onClose }) {
             <button
               type="button"
               onClick={copyAddress}
-              className="flex items-center gap-1.5 font-bold text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 font-bold text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer font-mono"
             >
               <span>{account.walletAddress || account.accountMask || 'bc1qxy2k...f2483'}</span>
-              <Copy size={13} className="text-slate-400" />
+              <Copy size={13} className="text-slate-500" />
             </button>
           </div>
 
           <div className="flex items-center justify-between pt-2">
             <span className="text-slate-400 font-medium">Average Buy Price</span>
             <span className="font-bold text-slate-900">
-              ${(account.avgBuyPrice || 89500).toLocaleString()}.00 USD
+              ${(account.avgBuyPrice || 89500).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
             </span>
           </div>
         </div>
@@ -103,7 +104,7 @@ export default function AccountDetailModal({ account, onClose }) {
             Last 3 {account.code} Transactions
           </p>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {(account.recentTransactions || [
               { id: 't1', description: 'Received BTC', amount: 0.002, direction: 'in' },
               { id: 't2', description: 'Sent to External Wallet', amount: -0.001, direction: 'out' },
@@ -111,9 +112,9 @@ export default function AccountDetailModal({ account, onClose }) {
             ]).map((t) => (
               <div
                 key={t.id}
-                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50/70 text-xs"
+                className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-50/70 text-xs"
               >
-                <span className="font-semibold text-slate-800">{t.description}</span>
+                <span className="font-bold text-slate-800">{t.description}</span>
                 <span
                   className={`font-bold ${
                     t.direction === 'in' || t.amount > 0 ? 'text-emerald-600' : 'text-slate-900'
@@ -127,14 +128,14 @@ export default function AccountDetailModal({ account, onClose }) {
         </div>
 
         {/* Bottom Actions matching screenshot */}
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => {
               onClose()
               navigate(`/send?asset=${account.code}`)
             }}
-            className="py-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs transition-colors cursor-pointer text-center"
+            className="py-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs transition-colors cursor-pointer text-center shadow-xs"
           >
             Send
           </button>
@@ -145,7 +146,7 @@ export default function AccountDetailModal({ account, onClose }) {
               onClose()
               navigate(`/receive?asset=${account.code}`)
             }}
-            className="py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-semibold text-xs transition-colors cursor-pointer text-center"
+            className="py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-bold text-xs transition-colors cursor-pointer text-center"
           >
             Receive
           </button>

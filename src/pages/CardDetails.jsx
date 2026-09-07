@@ -150,6 +150,8 @@ export default function CardDetails() {
                   expiry={card.expiry}
                   currency={card.currency}
                   colorScheme={card.colorScheme}
+                  cardType={card.cardType}
+                  isFrozen={isFrozen}
                 />
               </div>
 

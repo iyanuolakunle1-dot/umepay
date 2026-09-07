@@ -484,40 +484,40 @@ export default function Wallets() {
             </p>
 
             {/* Summary Box matching screenshot */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-4 text-xs space-y-3 text-left mb-6">
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 text-xs space-y-3.5 text-left mb-6">
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Amount Converted</span>
-                <span className="font-bold text-slate-900">${completedConv.fromAmount}.00 {completedConv.fromCurrency}</span>
+                <span className="text-slate-400 font-medium">Amount Converted</span>
+                <span className="font-bold text-slate-900">${parseFloat(completedConv.fromAmount || 500).toFixed(2)} {completedConv.fromCurrency || 'USD'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Converted To</span>
+                <span className="text-slate-400 font-medium">Converted To</span>
                 <span className="font-bold text-slate-900">
-                  {completedConv.toCurrency === 'NGN' ? '₦' : completedConv.toCurrency === 'EUR' ? '€' : ''}
-                  {completedConv.toAmount.toLocaleString()} {completedConv.toCurrency}
+                  {completedConv.toCurrency === 'NGN' ? '₦' : completedConv.toCurrency === 'EUR' ? '€' : completedConv.toCurrency === 'GBP' ? '£' : '$'}
+                  {Number(completedConv.toAmount || 790000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {completedConv.toCurrency || 'NGN'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Exchange Rate</span>
-                <span className="font-bold text-slate-900">{completedConv.exchangeRate}</span>
+                <span className="text-slate-400 font-medium">Exchange Rate</span>
+                <span className="font-bold text-slate-900">1 {completedConv.fromCurrency || 'USD'} = {rateMultiplier.toLocaleString(undefined, { minimumFractionDigits: 2 })} {completedConv.toCurrency || 'NGN'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Reference ID</span>
+                <span className="text-slate-400 font-medium">Reference ID</span>
                 <button
                   type="button"
                   onClick={copyRefId}
                   className="flex items-center gap-1.5 font-bold text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer"
                 >
-                  <span>{completedConv.reference}</span>
-                  <Copy size={13} className="text-slate-400" />
+                  <span>{completedConv.reference || 'CV-992847-XR'}</span>
+                  <Copy size={13} className="text-slate-500" />
                 </button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Settlement Date</span>
-                <span className="font-bold text-slate-900">Sep 3, 2026 • 2:15 PM</span>
+                <span className="text-slate-400 font-medium">Settlement Date</span>
+                <span className="font-semibold text-slate-900">Sep 3, 2026 • 2:15 PM</span>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <span className="text-slate-400">Status</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[10px]">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <span className="text-slate-400 font-medium">Status</span>
+                <span className="px-3 py-1 rounded-md border border-emerald-400 bg-emerald-50 text-emerald-600 font-bold text-[11px] tracking-wide">
                   SUCCESSFUL
                 </span>
               </div>
@@ -527,12 +527,11 @@ export default function Wallets() {
               <button
                 type="button"
                 onClick={() => {
-                  toast.success('Receipt Link Created', 'Receipt copied to clipboard.')
+                  toast.success('Receipt Link Created', 'Receipt link copied to clipboard.')
                 }}
-                className="w-full py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer text-center"
               >
-                <Share2 size={14} />
-                <span>Share Receipt</span>
+                Share Receipt
               </button>
 
               <button

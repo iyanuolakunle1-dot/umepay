@@ -2,16 +2,16 @@
 
 export const currentUser = {
   name: 'Alexander Cooper',
-  tier: 'Personal Tier 2',
+  tier: 'Personal Tier 1 (Unverified)',
   phone: '+1 (555) 234-5678',
   email: 'alexander.cooper@example.com',
   avatar: null,
   avatarInitials: 'AC',
-  kycVerified: true,
-  dailySendLimit: 50000,
-  monthlyCardLimit: 15000,
-  monthlyCardRemaining: 15000,
-  dailyReceiveLimit: null, // null => Unlimited
+  kycVerified: false,
+  dailySendLimit: 500,
+  monthlyCardLimit: 0,
+  monthlyCardRemaining: 0,
+  dailyReceiveLimit: 1000,
   universalAccountNumber: '555 234 5678',
 }
 

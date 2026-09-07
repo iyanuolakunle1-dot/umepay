@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import DashboardLayout from '../components/layout/DashboardLayout.jsx'
 import { useApp } from '../context/AppContext.jsx'
@@ -12,27 +12,33 @@ export default function CardSettings() {
 
   const card = cards.find((c) => c.id === id) || cards[0]
 
-  const [settings, setSettings] = useState(
-    card?.settings || {
-      spendingLimitEnabled: true,
-      monthlyLimit: 500.0,
-      perTxLimitEnabled: false,
-      perTxLimit: 250.0,
-      dailyTxCountEnabled: false,
-      dailyTxCount: 5,
-      onlineTx: true,
-      internationalTx: true,
-      contactless: false,
-      atmWithdrawals: false,
-      txAlerts: true,
-      declineAlerts: true,
-      summaryEmail: true,
-      autoFundEnabled: true,
-      minThreshold: 50.0,
-      topUpAmount: 200.0,
-      fundingSource: 'USD Wallet',
+  const defaultSettings = {
+    spendingLimitEnabled: true,
+    monthlyLimit: 500.0,
+    perTxLimitEnabled: false,
+    perTxLimit: 250.0,
+    dailyTxCountEnabled: false,
+    dailyTxCount: 5,
+    onlineTx: true,
+    internationalTx: true,
+    contactless: false,
+    atmWithdrawals: false,
+    txAlerts: true,
+    declineAlerts: true,
+    summaryEmail: true,
+    autoFundEnabled: true,
+    minThreshold: 50.0,
+    topUpAmount: 200.0,
+    fundingSource: 'USD Wallet',
+  }
+
+  const [settings, setSettings] = useState(card?.settings || defaultSettings)
+
+  useEffect(() => {
+    if (card?.settings) {
+      setSettings(card.settings)
     }
-  )
+  }, [card?.id])
 
   if (!card) {
     return (

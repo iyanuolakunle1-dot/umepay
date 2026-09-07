@@ -28,7 +28,9 @@ export default function CardTransactions() {
     )
   }
 
-  const filteredList = cardTransactions.filter((tx) => {
+  const cardTxList = cardTransactions.filter((tx) => !tx.cardId || tx.cardId === card.id)
+
+  const filteredList = cardTxList.filter((tx) => {
     if (filterType === 'All') return true
     return tx.type.toLowerCase() === filterType.toLowerCase()
   })
@@ -105,112 +107,121 @@ export default function CardTransactions() {
 
         {/* Transactions Table matching screenshot */}
         <div className="bg-white rounded-3xl border border-slate-100 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  <th className="py-3.5 px-6">DATE &amp; TIME</th>
-                  <th className="py-3.5 px-6">MERCHANT/DESCRIPTION</th>
-                  <th className="py-3.5 px-6">CATEGORY</th>
-                  <th className="py-3.5 px-6">AMOUNT</th>
-                  <th className="py-3.5 px-6">STATUS</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {filteredList.map((tx) => {
-                  const isDeclined = tx.status === 'DECLINED'
-                  const isRefunded = tx.status === 'REFUNDED'
-                  const isSuccessful = tx.status === 'SUCCESSFUL'
+          {filteredList.length === 0 ? (
+            <div className="p-12 text-center text-slate-400 text-xs">
+              <p className="font-semibold text-slate-600 mb-1">No transactions found</p>
+              <p>No activity matches the selected filter for this card.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/50 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    <th className="py-3.5 px-6">DATE &amp; TIME</th>
+                    <th className="py-3.5 px-6">MERCHANT/DESCRIPTION</th>
+                    <th className="py-3.5 px-6">CATEGORY</th>
+                    <th className="py-3.5 px-6">AMOUNT</th>
+                    <th className="py-3.5 px-6">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs">
+                  {filteredList.map((tx) => {
+                    const isDeclined = tx.status === 'DECLINED'
+                    const isRefunded = tx.status === 'REFUNDED'
+                    const isSuccessful = tx.status === 'SUCCESSFUL'
 
-                  return (
-                    <tr key={tx.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-4 px-6 text-slate-600 whitespace-nowrap">
-                        <div className="font-bold text-slate-900">{tx.date}</div>
-                        <div className="text-[11px] text-slate-400">{tx.time}</div>
-                      </td>
+                    return (
+                      <tr key={tx.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-4 px-6 text-slate-600 whitespace-nowrap">
+                          <div className="font-bold text-slate-900">{tx.date}</div>
+                          <div className="text-[11px] text-slate-400">{tx.time}</div>
+                        </td>
 
-                      <td className="py-4 px-6 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900">{tx.merchant}</span>
-                          {tx.statusNote && (
-                            <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold">
-                              {tx.statusNote}
-                            </span>
-                          )}
-                        </div>
-                      </td>
+                        <td className="py-4 px-6 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-900">{tx.merchant}</span>
+                            {tx.statusNote && (
+                              <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold">
+                                {tx.statusNote}
+                              </span>
+                            )}
+                          </div>
+                        </td>
 
-                      <td className="py-4 px-6 text-slate-500 font-medium whitespace-nowrap">
-                        {tx.category}
-                      </td>
+                        <td className="py-4 px-6 text-slate-500 font-medium whitespace-nowrap">
+                          {tx.category}
+                        </td>
 
-                      <td className="py-4 px-6 font-bold whitespace-nowrap">
-                        <span
-                          className={
-                            tx.amount > 0
-                              ? 'text-emerald-600'
-                              : isDeclined
-                              ? 'text-rose-600'
-                              : 'text-slate-900'
-                          }
-                        >
-                          {tx.amount > 0 ? `+$${tx.amount.toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`}
-                        </span>
-                      </td>
+                        <td className="py-4 px-6 font-bold whitespace-nowrap">
+                          <span
+                            className={
+                              tx.amount > 0
+                                ? 'text-emerald-600'
+                                : isDeclined
+                                ? 'text-rose-600'
+                                : 'text-slate-900'
+                            }
+                          >
+                            {tx.amount > 0 ? `+${card.symbol}${tx.amount.toFixed(2)}` : `-${card.symbol}${Math.abs(tx.amount).toFixed(2)}`}
+                          </span>
+                        </td>
 
-                      <td className="py-4 px-6 whitespace-nowrap">
-                        <span
-                          className={`px-2.5 py-1 rounded-md font-bold text-[10px] tracking-wide ${
-                            isSuccessful
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : isDeclined
-                              ? 'bg-rose-50 text-rose-600'
-                              : 'bg-sky-50 text-sky-600'
-                          }`}
-                        >
-                          {tx.status}
-                        </span>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <td className="py-4 px-6 whitespace-nowrap">
+                          <span
+                            className={`px-2.5 py-1 rounded-md font-bold text-[10px] tracking-wide ${
+                              isSuccessful
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : isDeclined
+                                ? 'bg-rose-50 text-rose-600'
+                                : 'bg-sky-50 text-sky-600'
+                            }`}
+                          >
+                            {tx.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Table Pagination footer matching screenshot */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 px-6 border-t border-slate-100 text-xs text-slate-400">
-            <span>Showing 1-{filteredList.length} of 34 transactions</span>
+          {filteredList.length > 0 && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 px-6 border-t border-slate-100 text-xs text-slate-400">
+              <span>Showing 1-{filteredList.length} of {filteredList.length} transactions</span>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setPage(Math.max(1, page - 1))}
-                className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold cursor-pointer"
-              >
-                Prev
-              </button>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg bg-[#0F172A] text-white text-xs font-bold flex items-center justify-center"
-              >
-                1
-              </button>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center justify-center cursor-pointer"
-              >
-                2
-              </button>
-              <button
-                type="button"
-                onClick={() => setPage(page + 1)}
-                className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold cursor-pointer"
-              >
-                Next
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold cursor-pointer"
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="w-7 h-7 rounded-lg bg-[#0F172A] text-white text-xs font-bold flex items-center justify-center"
+                >
+                  1
+                </button>
+                <button
+                  type="button"
+                  className="w-7 h-7 rounded-lg hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center justify-center cursor-pointer"
+                >
+                  2
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage(page + 1)}
+                  className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold cursor-pointer"
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

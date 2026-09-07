@@ -6,6 +6,7 @@ import Button from '../components/ui/Button.jsx'
 import { StatusBadge } from '../components/ui/Badge.jsx'
 import { SkeletonRow } from '../components/ui/Skeleton.jsx'
 import EmptyState from '../components/common/EmptyState.jsx'
+import TransactionReceiptModal from '../components/dashboard/TransactionReceiptModal.jsx'
 import { useApp } from '../context/AppContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 
@@ -31,6 +32,7 @@ export default function TransactionHistory() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('All')
   const [page, setPage] = useState(1)
+  const [selectedTx, setSelectedTx] = useState(null)
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 700)
@@ -71,7 +73,7 @@ export default function TransactionHistory() {
               <button
                 key={f}
                 onClick={() => handleFilter(f)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                   filter === f
                     ? 'bg-ink-800 text-white'
                     : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
@@ -110,7 +112,11 @@ export default function TransactionHistory() {
                     </tr>
                   ))
                 : pageItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr
+                      key={item.id}
+                      onClick={() => setSelectedTx(item)}
+                      className="hover:bg-slate-50/70 transition-colors cursor-pointer"
+                    >
                       <td className="px-6 py-3.5 whitespace-nowrap">
                         <p className="font-semibold text-ink-900">{item.date}</p>
                         <p className="text-xs text-slate-400">{item.time}</p>
@@ -149,7 +155,11 @@ export default function TransactionHistory() {
           {loading
             ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} className="py-3" />)
             : pageItems.map((item) => (
-                <div key={item.id} className="py-3.5">
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedTx(item)}
+                  className="py-3.5 cursor-pointer hover:bg-slate-50/70 transition-colors"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-ink-900 text-sm">{item.description}</p>
@@ -219,6 +229,13 @@ export default function TransactionHistory() {
           </div>
         )}
       </Card>
+
+      {/* Transaction Details Modal */}
+      <TransactionReceiptModal
+        item={selectedTx}
+        open={!!selectedTx}
+        onClose={() => setSelectedTx(null)}
+      />
     </DashboardLayout>
   )
 }

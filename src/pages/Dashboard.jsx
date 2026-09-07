@@ -79,6 +79,36 @@ export default function Dashboard() {
   return (
     <DashboardLayout title="Dashboard">
       <div className="space-y-6">
+        {/* Unverified KYC Banner */}
+        {!user.kycVerified && (
+          <div className="rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs animate-fade-in">
+            <div className="flex items-start gap-3">
+              <div className="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs mt-0.5 sm:mt-0">
+                <span className="font-extrabold text-sm">!</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-900">Identity Verification Required (Tier 1)</h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                    Action Needed
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed max-w-2xl">
+                  You are currently on basic Tier 1 with a $500/day limit. Complete your KYC verification in under 2 minutes to unlock <strong>Virtual Visa Cards</strong>, increase your send limit to <strong>$50,000/day</strong>, and activate universal fiat/crypto vaults.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/kyc"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shrink-0 transition-colors shadow-xs"
+            >
+              <span>Verify Identity</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        )}
+
         {/* TOP SECTION: Blue Universal Card + 2x2 Quick Actions matching screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Universal Financial ID Card (Royal Blue) */}
@@ -90,9 +120,19 @@ export default function Dashboard() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/90">
                   UNIVERSAL FINANCIAL ID
                 </span>
-                <span className="px-2.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-emerald-300 font-bold text-[10px] tracking-wider uppercase">
-                  VERIFIED
-                </span>
+                {user.kycVerified ? (
+                  <span className="px-2.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-emerald-300 font-bold text-[10px] tracking-wider uppercase">
+                    VERIFIED
+                  </span>
+                ) : (
+                  <Link
+                    to="/kyc"
+                    className="px-2.5 py-0.5 rounded-md bg-amber-400 text-slate-950 font-bold text-[10px] tracking-wider uppercase hover:bg-amber-300 transition-colors flex items-center gap-1"
+                  >
+                    <span>UNVERIFIED (TIER 1)</span>
+                    <ArrowRight size={10} />
+                  </Link>
+                )}
               </div>
 
               <p className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">

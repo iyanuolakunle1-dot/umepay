@@ -109,6 +109,8 @@ export default function Cards() {
                       expiry={card.expiry}
                       currency={card.currency}
                       colorScheme={card.colorScheme}
+                      cardType={card.cardType}
+                      isFrozen={isFrozen}
                     />
                   </div>
 

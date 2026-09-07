@@ -380,6 +380,7 @@ export default function CreateCard() {
                     expiry="09/28"
                     currency={selectedCurrency}
                     colorScheme={activeOption.colorScheme}
+                    cardType="Virtual Visa Debit"
                   />
                 </div>
 
@@ -519,6 +520,7 @@ export default function CreateCard() {
                 expiry={createdCardData.expiry}
                 currency={createdCardData.currency}
                 colorScheme={createdCardData.colorScheme}
+                cardType={createdCardData.cardType}
               />
             </div>
 

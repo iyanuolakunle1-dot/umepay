@@ -210,10 +210,15 @@ export default function KycVerification() {
       setKycSuccess(true)
       updateUser({
         name: personalInfo.fullName,
+        tier: 'Personal Tier 2',
         kycVerified: true,
+        dailySendLimit: 50000,
+        monthlyCardLimit: 15000,
+        monthlyCardRemaining: 15000,
+        dailyReceiveLimit: null,
         avatar: selfiePhoto || undefined,
       })
-      toast.success('Verification Complete', 'Your identity has been verified successfully.')
+      toast.success('Verification Complete', 'Your identity has been verified successfully. Tier 2 unlocked!')
       setTimeout(() => {
         navigate('/dashboard')
       }, 1500)
