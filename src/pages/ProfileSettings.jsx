@@ -48,12 +48,10 @@ export default function ProfileSettings() {
   const [isTierUpgradeOpen, setIsTierUpgradeOpen] = useState(false)
   const [isAddRailOpen, setIsAddRailOpen] = useState(false)
 
-  // Support modals state
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [isSupportOpen, setIsSupportOpen] = useState(false)
   const [isLegalOpen, setIsLegalOpen] = useState(false)
 
-  // Photo management state
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
   const [cameraStream, setCameraStream] = useState(null)
@@ -76,7 +74,6 @@ export default function ProfileSettings() {
     .map((n) => n[0])
     .join('')
 
-  // Handle local file upload
   function handleFileChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -99,7 +96,6 @@ export default function ProfileSettings() {
     e.target.value = ''
   }
 
-  // Camera Management
   async function startCamera(mode = facingMode) {
     setCameraError(null)
     setCapturedPhoto(null)
@@ -160,7 +156,6 @@ export default function ProfileSettings() {
     canvas.height = video.videoHeight || 640
     const ctx = canvas.getContext('2d')
 
-    // If front camera, mirror image for natural selfie feel
     if (facingMode === 'user') {
       ctx.translate(canvas.width, 0)
       ctx.scale(-1, 1)
@@ -185,14 +180,12 @@ export default function ProfileSettings() {
     setIsOptionsOpen(false)
   }
 
-  // Keep video source synced when stream changes
   useEffect(() => {
     if (isCameraOpen && videoRef.current && cameraStream && !capturedPhoto) {
       videoRef.current.srcObject = cameraStream
     }
   }, [isCameraOpen, cameraStream, capturedPhoto])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (cameraStream) {

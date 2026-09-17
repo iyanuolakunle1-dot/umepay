@@ -119,7 +119,6 @@ export default function CardSettings() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Left Column */}
             <div className="space-y-6">
-              {/* Spending Controls matching screenshot */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs space-y-5">
                 <h3 className="font-bold text-slate-900 text-sm">Spending Controls</h3>
 
@@ -206,7 +205,6 @@ export default function CardSettings() {
                 </div>
               </div>
 
-              {/* Security Settings matching screenshot */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs space-y-4">
                 <h3 className="font-bold text-slate-900 text-sm">Security Settings</h3>
 
@@ -274,7 +272,6 @@ export default function CardSettings() {
 
             {/* Right Column */}
             <div className="space-y-6">
-              {/* Alerts & Notifications matching screenshot */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs space-y-4">
                 <h3 className="font-bold text-slate-900 text-sm">Alerts &amp; Notifications</h3>
 
@@ -339,7 +336,6 @@ export default function CardSettings() {
                 </div>
               </div>
 
-              {/* Auto-Fund Settings matching screenshot */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs space-y-4">
                 <h3 className="font-bold text-slate-900 text-sm">Auto-Fund Settings</h3>
 
@@ -420,7 +416,6 @@ export default function CardSettings() {
                 )}
               </div>
 
-              {/* Save Changes Button matching screenshot */}
               <button
                 type="submit"
                 className="w-full py-3.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs tracking-wide transition-colors cursor-pointer shadow-xs"

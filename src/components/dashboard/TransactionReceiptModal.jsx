@@ -32,12 +32,10 @@ export default function TransactionReceiptModal({ item, open, onClose }) {
           <X size={16} />
         </button>
 
-        {/* Title */}
         <h3 className="text-xl font-bold text-slate-900 mb-6">
           Transaction Details
         </h3>
 
-        {/* Hero Amount Box matching screenshot */}
         <div className="rounded-2xl bg-cyan-50/50 border border-cyan-100/60 p-6 text-center space-y-2 mb-6">
           <div>
             <span className="inline-flex items-center px-3 py-0.5 rounded-full bg-white border border-emerald-300 text-emerald-600 text-xs font-bold shadow-2xs">
@@ -49,7 +47,6 @@ export default function TransactionReceiptModal({ item, open, onClose }) {
           </p>
         </div>
 
-        {/* Details Table matching screenshot */}
         <div className="text-xs space-y-3 pb-6 border-b border-slate-100">
           <div className="flex items-center justify-between">
             <span className="text-slate-400">Transaction Type</span>

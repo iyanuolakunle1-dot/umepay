@@ -1,9 +1,3 @@
-/**
- * Self-contained QR Code Matrix Generator (Byte mode, Error Correction Level M/L)
- * Produces valid, standard-compliant scannable QR Code matrices for any string.
- */
-
-// Galois field tables for GF(256)
 const GF256_EXP = new Uint8Array(512)
 const GF256_LOG = new Uint8Array(256)
 
@@ -139,7 +133,6 @@ export function generateQrMatrix(text) {
     isReserved[r][c] = true
   }
 
-  // 1. Finder patterns (7x7)
   function drawFinder(row, col) {
     for (let r = -1; r <= 7; r++) {
       for (let c = -1; c <= 7; c++) {
@@ -163,7 +156,6 @@ export function generateQrMatrix(text) {
   drawFinder(0, size - 7)
   drawFinder(size - 7, 0)
 
-  // 2. Alignment patterns
   if (verInfo.align.length > 0) {
     const coords = verInfo.align
     for (const r of coords) {
@@ -180,16 +172,13 @@ export function generateQrMatrix(text) {
     }
   }
 
-  // 3. Timing patterns
   for (let i = 8; i < size - 8; i++) {
     if (!isReserved[6][i]) setModule(6, i, i % 2 === 0)
     if (!isReserved[i][6]) setModule(i, 6, i % 2 === 0)
   }
 
-  // 4. Dark module
   setModule(size - 8, 8, true)
 
-  // 5. Reserve format info areas
   for (let i = 0; i < 9; i++) {
     if (!isReserved[8][i]) isReserved[8][i] = true
     if (!isReserved[i][8]) isReserved[i][8] = true
@@ -199,7 +188,6 @@ export function generateQrMatrix(text) {
     if (!isReserved[size - 1 - i][8]) isReserved[size - 1 - i][8] = true
   }
 
-  // 6. Place data bits in zigzag
   const allBits = []
   for (let i = 0; i < allCodewords.length; i++) {
     for (let b = 7; b >= 0; b--) {
@@ -229,10 +217,7 @@ export function generateQrMatrix(text) {
     upward = !upward
   }
 
-  // 7. Format Info for Level M + Mask 0 (0b10000 -> 0x5412 XOR)
-  // Standard format bits with BCH error correction
   const formatBits = [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]
-  // Write format info
   for (let i = 0; i < 6; i++) matrix[8][i] = Boolean(formatBits[i])
   matrix[8][7] = Boolean(formatBits[6])
   matrix[8][8] = Boolean(formatBits[7])

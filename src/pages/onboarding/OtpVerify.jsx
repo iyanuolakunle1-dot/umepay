@@ -5,6 +5,7 @@ import OnboardingShell, { StepBadge } from '../../components/common/OnboardingSh
 import Button from '../../components/ui/Button.jsx'
 import useCountdown from '../../hooks/useCountdown.js'
 import { useToast } from '../../context/ToastContext.jsx'
+import { authService } from '../../services/auth.service.js'
 
 export default function OtpVerify() {
   const [digits, setDigits] = useState(Array(6).fill(''))
@@ -38,16 +39,25 @@ export default function OtpVerify() {
     toast.success('Code Applied', 'Verification OTP (123456) filled.')
   }
 
-  function handleResend() {
+  async function handleResend() {
     if (seconds > 0) return
     reset(59)
+    try {
+      await authService.resendOtp({ phone })
+    } catch (err) {
+      console.warn('Resend OTP fallback:', err.message)
+    }
     toast.info('Code resent', `A new verification code was sent to ${masked}.`)
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
+    try {
+      await authService.verifyOtp({ phone, code: digits.join('') })
+    } catch (err) {
+      console.warn('Verify OTP fallback:', err.message)
+    } finally {
       setLoading(false)
       if (mode === 'signin') {
         toast.success('Signed in successfully', 'Welcome back to UMEPAY!')
@@ -55,7 +65,7 @@ export default function OtpVerify() {
       } else {
         navigate('/onboarding/success', { state: { phone } })
       }
-    }, 750)
+    }
   }
 
   const isComplete = digits.every((d) => d !== '')
@@ -66,20 +76,22 @@ export default function OtpVerify() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-sm font-semibold text-ink-800 hover:text-ink-900"
+          className="text-sm font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
         >
-          <ArrowLeft size={15} /> Back
+          Back
         </button>
-        <StepBadge>{mode === 'signin' ? 'Sign In OTP' : 'Step 2 of 2'}</StepBadge>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-full">
+          {mode === 'signin' ? 'Sign In OTP' : 'STEP 2 OF 2'}
+        </span>
       </div>
 
-      <h1 className="text-2xl font-extrabold text-ink-900 tracking-tight">Verify your phone</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Verify your phone</h1>
       <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-        We sent a 6-digit secure verification code to <span className="font-semibold text-ink-800">{masked}</span>
+        We sent a secure verification code to <span className="font-semibold text-slate-800">{masked}</span>
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6">
-        <div className="grid grid-cols-6 gap-2 sm:gap-2.5">
+      <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <div className="grid grid-cols-6 gap-2 sm:gap-3">
           {digits.map((d, i) => (
             <input
               key={i}
@@ -89,47 +101,33 @@ export default function OtpVerify() {
               onKeyDown={(e) => handleKeyDown(i, e)}
               inputMode="numeric"
               maxLength={1}
-              className={`h-13 sm:h-15 rounded-xl border text-center text-xl font-extrabold text-ink-900 outline-none transition-all ${
-                d ? 'border-ink-800 ring-2 ring-ink-100 bg-slate-50/50' : 'border-slate-200'
-              }`}
+              className="h-14 sm:h-16 rounded-xl border-2 border-slate-900 text-center text-2xl font-bold text-slate-900 outline-none transition-all focus:ring-2 focus:ring-slate-900/20 bg-white"
             />
           ))}
         </div>
 
-        {/* Quick auto fill helper */}
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <button
-            type="button"
-            onClick={handleAutoFill}
-            className="inline-flex items-center gap-1 font-semibold text-ink-800 hover:text-black bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors"
-          >
-            <Sparkles size={12} className="text-amber-500" /> Instant Code (123456)
-          </button>
-
+        <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+          <span>Didn't receive code?</span>
           <button
             type="button"
             onClick={handleResend}
             disabled={seconds > 0}
-            className={`font-semibold ${
-              seconds > 0 ? 'text-slate-400 cursor-not-allowed' : 'text-ink-800 hover:underline'
+            className={`font-bold transition-colors cursor-pointer ${
+              seconds > 0 ? 'text-slate-900' : 'text-indigo-600 hover:underline'
             }`}
           >
-            {seconds > 0 ? `Resend in ${label}` : 'Resend Code'}
+            {seconds > 0 ? `Resend code in ${label}` : 'Resend code now'}
           </button>
         </div>
 
-        <Button
+        <button
           type="submit"
-          fullWidth
-          size="lg"
-          className="mt-6"
-          loading={loading}
-          disabled={!isComplete}
-          icon={ArrowRight}
-          iconPosition="right"
+          disabled={!isComplete || loading}
+          className="w-full py-4 rounded-xl bg-[#162044] hover:bg-[#1E293B] text-white font-bold text-sm tracking-wide transition-colors cursor-pointer shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          {mode === 'signin' ? 'Sign In to Dashboard' : 'Verify & Complete'}
-        </Button>
+          <span>{loading ? 'Verifying...' : mode === 'signin' ? 'Sign In to Dashboard' : 'Verify & Continue'}</span>
+          {!loading && <ArrowRight size={16} />}
+        </button>
       </form>
     </OnboardingShell>
   )

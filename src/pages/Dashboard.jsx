@@ -109,9 +109,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* TOP SECTION: Blue Universal Card + 2x2 Quick Actions matching screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-          {/* Universal Financial ID Card (Royal Blue) */}
           <div className="lg:col-span-8 rounded-3xl p-4 sm:p-7 text-white bg-gradient-to-tr from-[#0038E2] via-[#0052FF] to-[#0A65FF] shadow-lg flex flex-col justify-between relative overflow-hidden">
             <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-white/10 blur-xl pointer-events-none" />
 
@@ -160,7 +158,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* 2x2 Quick Action Cards matching screenshot */}
           <div className="lg:col-span-4 grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -312,9 +309,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* SECTION 3: Recent Activity + Allocation Split + Instant Conversion matching screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Recent Activity (Left 7 cols) */}
           <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-sm">Recent Activity</h3>
@@ -414,7 +409,6 @@ export default function Dashboard() {
               <AllocationChart data={allocationSplit} />
             </div>
 
-            {/* Instant Conversion Mini Box matching screenshot */}
             <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-3">
               <h3 className="font-bold text-slate-900 text-sm">Instant Conversion</h3>
 

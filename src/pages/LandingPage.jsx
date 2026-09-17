@@ -19,10 +19,11 @@ import LandingHeroDiagram from '../components/landing/LandingHeroDiagram.jsx'
 import LandingVirtualCard from '../components/landing/LandingVirtualCard.jsx'
 
 const navLinks = [
-  { label: 'Multi-Asset Wallet', href: '#assets' },
-  { label: 'Virtual Cards', href: '#card' },
-  { label: 'Send/Receive', href: '#routing' },
-  { label: 'Exchange', href: '#assets' },
+  { label: 'Global Routing', href: '#routing' },
+  { label: 'Assets', href: '#assets' },
+  { label: 'Virtual Card', href: '#card' },
+  { label: 'Security', href: '#security' },
+  { label: 'Developers', href: '#developers' },
 ]
 
 const steps = [
@@ -143,10 +144,10 @@ const trust = [
 ]
 
 const stats = [
-  { value: '$5.4B+', label: 'Volume Transacted', sub: 'Processed across global rails' },
-  { value: '140+', label: 'Countries Active', sub: 'Supported for multi-asset conversion' },
-  { value: '1.2M+', label: 'Verified Identities', sub: 'Connecting daily to global rails' },
-  { value: '99.99%', label: 'Global Uptime', sub: 'Guaranteed network reliability' },
+  { value: '$5.4B+', label: 'Volume Processed', sub: 'Across all supported currencies' },
+  { value: '140+', label: 'Countries Active', sub: 'Supported local corridors' },
+  { value: '1.2M+', label: 'Verified Identities', sub: 'Currently active users' },
+  { value: '99.99%', label: 'Uptime SLA', sub: 'Enterprise grade reliability' },
 ]
 
 export default function LandingPage() {
@@ -212,10 +213,10 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link
-              to="/register"
+              to="/dashboard"
               className="bg-[#18224b] hover:bg-[#0f172a] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <span>Create Account</span>
+              <span>Launch App</span>
             </Link>
           </div>
 
@@ -256,11 +257,11 @@ export default function LandingPage() {
 
             <div className="pt-4 border-t border-slate-100 space-y-2.5">
               <Link
-                to="/register"
+                to="/dashboard"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#18224b] text-white font-bold text-sm shadow-sm transition-all"
               >
-                <span>Create Free Account</span>
+                <span>Launch App</span>
                 <ArrowRight size={15} />
               </Link>
               <Link
@@ -285,8 +286,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-5 text-slate-500 text-base sm:text-lg leading-relaxed max-w-lg">
-              One verified ID connecting fiat accounts, traditional banks, virtual cards, and crypto assets.
-              No long wallet addresses or complicated routing codes.
+              One verified ID connecting multi-currency accounts, local bank rails, and virtual cards. No long wallet addresses or complicated routing codes.
             </p>
 
             {/* Pill Phone Input Box */}
@@ -318,16 +318,16 @@ export default function LandingPage() {
               </button>
             </form>
 
-            {/* Feature Checkmarks */}
+            {/* Feature Checkmarks matching Image 4 */}
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
               <span className="flex items-center gap-1.5">
-                <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Bank-grade 256-bit
+                <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Zero execution fee
               </span>
               <span className="flex items-center gap-1.5">
                 <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Instant Verification
               </span>
               <span className="flex items-center gap-1.5">
-                <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Zero Monthly Fees
+                <Check size={14} strokeWidth={2.8} className="text-emerald-500" /> Peer-to-Peer Zero Cost
               </span>
             </div>
           </div>
@@ -347,7 +347,7 @@ export default function LandingPage() {
               How UMEPAY simplifies your finance
             </h2>
             <p className="mt-3 text-slate-500 text-sm sm:text-base leading-relaxed">
-              Instant connectivity through a single ID and zero-code payments for your bank account and multi-rail settlements.
+              Instant connection from simple phone identity to global accounts, fiat rails, and virtual web3.
             </p>
           </div>
 
@@ -377,7 +377,7 @@ export default function LandingPage() {
                 One identity, every asset
               </h2>
               <p className="mt-3 text-slate-500 text-sm sm:text-base max-w-xl leading-relaxed">
-                Stop juggling multiple addresses. UMEPAY dynamically manages currencies for your destination with zero slippage or hidden bank fees.
+                Stop juggling multiple wallets and protocols. Connect once and manage your fiat and crypto in one secure place.
               </p>
             </div>
 
@@ -386,7 +386,7 @@ export default function LandingPage() {
               onClick={() => navigate('/convert')}
               className="self-start sm:self-auto rounded-full border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
             >
-              <span>Real-time live exchange rates</span>
+              <span>Explore supported assets</span>
               <ArrowRight size={14} />
             </button>
           </div>
@@ -416,9 +416,8 @@ export default function LandingPage() {
       </section>
 
       {/* 5. Section: Virtual Visa Card */}
-      <section id="card" className="py-20 sm:py-28 bg-[#F3F6FC] border-t border-slate-100">
+      <section id="card" className="py-20 sm:py-28 bg-[#EEF2FF]/60 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Card Visual Matching Screenshot 4 */}
           <div className="flex justify-center lg:justify-start">
             <LandingVirtualCard />
           </div>
@@ -426,7 +425,7 @@ export default function LandingPage() {
           {/* Text & Feature List */}
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold mb-4 uppercase tracking-wider">
-              VISA • VIRTUAL
+              Web + App
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight leading-tight">
@@ -434,15 +433,15 @@ export default function LandingPage() {
             </h2>
 
             <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-              Issue your universal digital VISA in 30 seconds. Connect it directly to your unified phone balance and tap to pay anywhere Visa is accepted worldwide.
+              Issue your own virtual Visa debit card instantly. Connect it directly to your universal balance and spend globally wherever Visa is accepted.
             </p>
 
             <div className="mt-8 space-y-3.5">
               {[
                 'Apple Pay & Google Pay compatible',
-                'Direct crypto conversions at point of sale',
-                'Zero foreign exchange mark-up fees',
-                'Instant push notifications & software controls',
+                'Direct auto-conversions at point of sale',
+                'Zero foreign exchange fee on primary currencies',
+                'Instant push notifications & per-freeze control',
               ].map((f) => (
                 <div key={f} className="flex items-center gap-3 text-sm font-semibold text-slate-800">
                   <div className="h-5 w-5 rounded-full bg-blue-600 text-white grid place-items-center shrink-0 shadow-xs">
@@ -464,7 +463,7 @@ export default function LandingPage() {
               Built on trust, secured by design
             </h2>
             <p className="mt-3 text-slate-500 text-sm sm:text-base leading-relaxed">
-              UMEPAY operates at the highest levels of global compliance and institutional security to ensure your funds and data remain protected.
+              UMEPAY operates at the highest standards of global compliance and institutional security to ensure your funds and identity remain safe.
             </p>
           </div>
 
@@ -504,7 +503,7 @@ export default function LandingPage() {
             Ready to simplify your global finances?
           </h2>
           <p className="mt-4 text-slate-500 text-sm sm:text-base leading-relaxed">
-            Create your universal financial identity today. Instantly connect your phone number and receive your free virtual Visa card in seconds.
+            Create your Universal Financial Identity today. Instantly connect your phone number and configure your multi-currency global account.
           </p>
 
           {/* Centered Pill Input Bar */}
@@ -537,28 +536,28 @@ export default function LandingPage() {
           </form>
 
           <p className="mt-4 text-xs text-slate-400">
-            No credit card required. Free account setup with instant verification in eligible countries.
+            No credit card required. Available in 140+ countries. T&Cs apply.
           </p>
         </div>
       </section>
 
-      {/* 9. Footer */}
+      {/* 9. Footer matching Image 4 */}
       <footer id="developers" className="bg-[#0B1120] text-slate-400 text-xs py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
             <div className="lg:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="font-extrabold text-lg text-white tracking-tight font-sans">UMEPAY</span>
+                <span className="font-extrabold text-xl text-white tracking-tight font-sans">Umepay</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                The universal identity layer for world-class fiat accounts, stablecoins, and cards on demand.
+                One universal financial identity for seamless multi-currency fiat accounts, stablecoins, and virtual debit cards.
               </p>
             </div>
 
             {[
               {
                 title: 'PRODUCT',
-                items: ['Multi-Asset Wallet', 'Universal ID Card', 'Virtual Visa Card', 'Instant Swap'],
+                items: ['Global Routing', 'Multi-Asset Hub', 'Virtual Visa Card', 'Instant Swaps'],
               },
               {
                 title: 'COMPANY',
@@ -566,10 +565,10 @@ export default function LandingPage() {
               },
               {
                 title: 'DEVELOPERS',
-                items: ['API Reference', 'SDK Libraries', 'Webhooks', 'Sandbox Access'],
+                items: ['Documentation', 'API Reference', 'SDKs', 'System Status'],
               },
               {
-                title: 'REGULATION & LEGAL',
+                title: 'REGULATORY & LEGAL',
                 items: ['Privacy Policy', 'Terms of Service', 'AML/KYC Policy', 'Licenses & Security'],
               },
             ].map((col) => (

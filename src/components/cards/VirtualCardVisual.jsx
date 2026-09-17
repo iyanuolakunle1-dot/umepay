@@ -14,7 +14,6 @@ export default function VirtualCardVisual({
   isFrozen = false,
   className = '',
 }) {
-  // Gradients matching exact screenshots
   const bgStyles = {
     blue: 'bg-gradient-to-tr from-[#0038E2] via-[#0052FF] to-[#0A65FF]',
     navy: 'bg-gradient-to-tr from-[#090D16] via-[#111827] to-[#1F2937]',
@@ -43,7 +42,6 @@ export default function VirtualCardVisual({
         boxShadow: '0 20px 25px -5px rgba(0, 50, 150, 0.18), 0 8px 10px -6px rgba(0, 50, 150, 0.12)',
       }}
     >
-      {/* Glossy ambient overlay curve matching screenshots */}
       <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
       <div className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-black/25 blur-2xl pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_60%)] pointer-events-none" />

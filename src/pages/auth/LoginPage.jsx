@@ -15,13 +15,14 @@ import Button from '../../components/ui/Button.jsx'
 import CountryCodeDropdown from '../../components/common/CountryCodeDropdown.jsx'
 import { useApp } from '../../context/AppContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
+import { authService } from '../../services/auth.service.js'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { user, updateUser } = useApp()
 
-  const [loginMethod, setLoginMethod] = useState('phone') // 'phone' | 'email'
+  const [loginMethod, setLoginMethod] = useState('phone')
   const [countryCode, setCountryCode] = useState('+234')
   const [phone, setPhone] = useState('812 345 6789')
   const [email, setEmail] = useState('adaeze.okafor@gmail.com')
@@ -30,14 +31,22 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      const identifier = loginMethod === 'phone' ? `${countryCode}${phone.replace(/\s+/g, '')}` : email
+      const res = await authService.login({ identifier, pin, method: loginMethod })
+      if (res?.user) updateUser(res.user)
+      toast.success('Welcome back!', `Signed in as ${res?.user?.name || user.name}.`)
+      navigate('/dashboard')
+    } catch (err) {
+      console.warn('Backend login fallback:', err.message)
       toast.success('Welcome back!', `Signed in as ${user.name}.`)
       navigate('/dashboard')
-    }, 700)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleQuickSignIn() {

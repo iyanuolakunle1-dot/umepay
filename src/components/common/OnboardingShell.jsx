@@ -1,7 +1,7 @@
 export default function OnboardingShell({ children, footer }) {
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center px-4 py-10">
-      <div className="w-full max-w-[440px] bg-white rounded-3xl shadow-popover p-8 sm:p-9 animate-fade-in-up">
+    <div className="min-h-screen bg-[#F4F7FB] flex flex-col items-center justify-center px-4 py-10">
+      <div className="w-full max-w-[460px] bg-white rounded-3xl border border-slate-100 shadow-xl p-8 sm:p-10 animate-fade-in-up">
         {children}
       </div>
       {footer && <div className="mt-6">{footer}</div>}

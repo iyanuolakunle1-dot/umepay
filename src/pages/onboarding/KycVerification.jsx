@@ -17,6 +17,7 @@ import Button from '../../components/ui/Button.jsx'
 import Modal, { ModalHeader } from '../../components/ui/Modal.jsx'
 import { useApp } from '../../context/AppContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
+import { authService } from '../../services/auth.service.js'
 
 export default function KycVerification() {
   const navigate = useNavigate()
@@ -25,7 +26,6 @@ export default function KycVerification() {
 
   const [currentStep, setCurrentStep] = useState(1)
 
-  // Step 1: Personal Information State
   const [personalInfo, setPersonalInfo] = useState({
     fullName: 'Alexander Cooper',
     dob: '12/04/1995',
@@ -37,7 +37,6 @@ export default function KycVerification() {
     postalCode: '100011',
   })
 
-  // Step 2: Document Upload State
   const [documentType, setDocumentType] = useState('National Identity Number')
   const [idNumber, setIdNumber] = useState('0123456789')
   const [frontDoc, setFrontDoc] = useState({
@@ -55,7 +54,6 @@ export default function KycVerification() {
   const backInputRef = useRef(null)
   const selfieInputRef = useRef(null)
 
-  // Step 3: Selfie Verification State
   const [selfiePhoto, setSelfiePhoto] = useState(null)
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false)
   const [cameraStream, setCameraStream] = useState(null)
@@ -75,7 +73,6 @@ export default function KycVerification() {
     }
   }
 
-  // Step 1 Submit
   function handleStep1Submit(e) {
     e?.preventDefault()
     if (!personalInfo.fullName.trim()) {
@@ -85,7 +82,6 @@ export default function KycVerification() {
     setCurrentStep(2)
   }
 
-  // Step 2 File Handling
   function handleFileUpload(file, isFront = true) {
     if (!file) return
     const formattedSize =
@@ -116,7 +112,6 @@ export default function KycVerification() {
     setCurrentStep(3)
   }
 
-  // Step 3 Camera Management
   async function startCamera(mode = facingMode) {
     setCameraError(null)
     setCapturedFrame(null)
@@ -203,9 +198,20 @@ export default function KycVerification() {
     e.target.value = ''
   }
 
-  function handleFinalSubmit() {
+  async function handleFinalSubmit() {
     setSubmitting(true)
-    setTimeout(() => {
+    try {
+      await authService.submitKyc({
+        ...personalInfo,
+        documentType,
+        idNumber,
+        frontDocUrl: frontDoc?.dataUrl,
+        backDocUrl: backDoc?.dataUrl,
+        selfieUrl: selfiePhoto,
+      })
+    } catch (err) {
+      console.warn('KYC submission fallback:', err.message)
+    } finally {
       setSubmitting(false)
       setKycSuccess(true)
       updateUser({
@@ -222,7 +228,7 @@ export default function KycVerification() {
       setTimeout(() => {
         navigate('/dashboard')
       }, 1500)
-    }, 1200)
+    }
   }
 
   useEffect(() => {

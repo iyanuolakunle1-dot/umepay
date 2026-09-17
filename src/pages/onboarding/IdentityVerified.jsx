@@ -17,29 +17,23 @@ export default function IdentityVerified() {
 
   return (
     <OnboardingShell>
-      <div className="text-center">
-        <div className="h-16 w-16 rounded-full bg-emerald-50 grid place-items-center mx-auto mb-5">
-          <Check size={28} className="text-emerald-600" strokeWidth={3} />
+      <div className="text-center py-2">
+        <div className="h-14 w-14 rounded-full bg-emerald-50 grid place-items-center mx-auto mb-4">
+          <Check size={26} className="text-emerald-500" strokeWidth={3} />
         </div>
-        <h1 className="text-2xl font-extrabold text-ink-900 tracking-tight">Identity Verified</h1>
-        <p className="mt-2 text-sm text-slate-500 leading-relaxed max-w-xs mx-auto">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">Identity Verified</h1>
+        <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto mb-6">
           Your phone number +234 {phone} has been verified as your Universal Financial ID.
         </p>
 
-        <div className="mt-7 space-y-3">
-          <Button fullWidth size="lg" loading={loading} onClick={handleContinue}>
-            Continue to KYC Verification
-          </Button>
-
-          <Button
-            variant="outline"
-            fullWidth
-            size="lg"
-            onClick={() => navigate('/dashboard')}
-          >
-            Go to Dashboard
-          </Button>
-        </div>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleContinue}
+          className="w-full py-3.5 rounded-xl bg-[#162044] hover:bg-[#1E293B] text-white font-bold text-sm tracking-wide transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+        >
+          {loading ? 'Continuing...' : 'Continue to KYC'}
+        </button>
       </div>
     </OnboardingShell>
   )

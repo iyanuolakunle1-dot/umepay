@@ -14,7 +14,6 @@ export default function QuickConvertModal({ open, onClose }) {
   const [fromAmount, setFromAmount] = useState('100')
   const [submitting, setSubmitting] = useState(false)
 
-  // Simulated exchange rates
   const rates = {
     USD_NGN: 1600,
     NGN_USD: 1 / 1600,

@@ -51,7 +51,6 @@ export default function Header({ title }) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-5 shrink-0">
-        {/* Search Bar matching screenshot */}
         <div className="relative hidden md:block">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -63,7 +62,6 @@ export default function Header({ title }) {
 
         <NotificationsDropdown />
 
-        {/* User Profile Header matching screenshot */}
         <div className="relative" ref={menuRef}>
           <button
             type="button"

@@ -1,6 +1,5 @@
 import React from 'react'
 
-// Authentic Umepay Brand Wordmark & Logo
 export function UmepayLogo({ className = 'h-7', variant = 'dark' }) {
   const isLight = variant === 'light'
   const isYellow = variant === 'yellow'
@@ -8,7 +7,6 @@ export function UmepayLogo({ className = 'h-7', variant = 'dark' }) {
   return (
     <div className={`flex items-center gap-2 select-none ${className}`}>
       <svg viewBox="0 0 140 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto">
-        {/* Custom modern Umepay typography */}
         <text
           x="0"
           y="29"
@@ -25,7 +23,6 @@ export function UmepayLogo({ className = 'h-7', variant = 'dark' }) {
   )
 }
 
-// Real Currency Badges & Icons
 export function CurrencyBadge({ code, size = 'md', className = '' }) {
   const sizeClasses = {
     sm: 'w-6 h-6 text-xs',
@@ -92,7 +89,6 @@ export function CurrencyBadge({ code, size = 'md', className = '' }) {
   }
 }
 
-// Real EMV Chip
 export function CardChip({ className = 'w-10 h-7' }) {
   return (
     <div className={`${className} rounded-md bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-500 border border-yellow-300/60 p-1 relative overflow-hidden shadow-inner`}>
@@ -105,7 +101,6 @@ export function CardChip({ className = 'w-10 h-7' }) {
   )
 }
 
-// Visa & Mastercard SVGs
 export function VisaLogo({ className = 'h-5' }) {
   return (
     <span className={`font-extrabold italic text-lg tracking-tighter text-white select-none ${className}`}>

@@ -22,7 +22,6 @@ export default function AccountDetailModal({ account, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
       <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
-        {/* Header matching screenshot */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2.5">
             <span
@@ -52,7 +51,6 @@ export default function AccountDetailModal({ account, onClose }) {
           </button>
         </div>
 
-        {/* Gradient Banner matching screenshot */}
         <div className="rounded-2xl p-6 mb-5 text-white bg-gradient-to-r from-[#0E0348] via-[#1A066E] to-[#26008E] shadow-lg relative overflow-hidden">
           <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <p className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1.5">
@@ -67,7 +65,6 @@ export default function AccountDetailModal({ account, onClose }) {
           </p>
         </div>
 
-        {/* Details Card matching screenshot */}
         <div className="bg-white rounded-2xl border border-slate-100 p-4 divide-y divide-slate-100 text-xs mb-5 space-y-2">
           <div className="flex items-center justify-between pb-2">
             <span className="text-slate-400 font-medium">Wallet Network</span>
@@ -98,7 +95,6 @@ export default function AccountDetailModal({ account, onClose }) {
           </div>
         </div>
 
-        {/* Last 3 Transactions matching screenshot */}
         <div className="mb-6">
           <p className="text-xs font-bold text-slate-900 mb-2.5">
             Last 3 {account.code} Transactions
@@ -127,7 +123,6 @@ export default function AccountDetailModal({ account, onClose }) {
           </div>
         </div>
 
-        {/* Bottom Actions matching screenshot */}
         <div className="grid grid-cols-3 gap-3">
           <button
             type="button"

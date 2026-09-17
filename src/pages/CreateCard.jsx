@@ -47,7 +47,7 @@ export default function CreateCard() {
   const toast = useToast()
   const { user, createCard, updateUser } = useApp()
 
-  const [step, setStep] = useState(1) // 1: Select Currency, 2: Configure Card
+  const [step, setStep] = useState(1)
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
   const [cardLabel, setCardLabel] = useState('Netflix & Subscriptions')
   const [spendingLimitEnabled, setSpendingLimitEnabled] = useState(true)
@@ -55,7 +55,6 @@ export default function CreateCard() {
   const [autoFundEnabled, setAutoFundEnabled] = useState(true)
   const [fundingSource, setFundingSource] = useState('USD Wallet')
 
-  // Modals
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [createdModalOpen, setCreatedModalOpen] = useState(false)
   const [createdCardData, setCreatedCardData] = useState(null)
@@ -164,7 +163,6 @@ export default function CreateCard() {
   return (
     <DashboardLayout title="Create Virtual Card">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Step Indicator Header matching screenshot */}
         <div className="flex items-center justify-start gap-4 sm:gap-8 pb-2">
           {/* Step 1 */}
           <div className="flex items-center gap-2.5">
@@ -437,7 +435,6 @@ export default function CreateCard() {
                 </div>
               </div>
 
-              {/* Live Preview Panel matching screenshot */}
               <div className="lg:col-span-5 bg-slate-50/80 rounded-3xl p-6 border border-slate-100 flex flex-col items-center">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-5 text-center">
                   LIVE CARD PREVIEW
@@ -475,7 +472,6 @@ export default function CreateCard() {
         )}
       </div>
 
-      {/* STEP 3 / MODAL: Review Card Details matching screenshot */}
       {reviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
           <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
@@ -531,17 +527,16 @@ export default function CreateCard() {
                 <p className="text-sm font-bold text-slate-900">{fundingSource}</p>
               </div>
 
-              {/* Creation Fee Box */}
-              <div className="bg-slate-50 rounded-xl p-3.5 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">Creation Fee</span>
-                <span className="px-2.5 py-1 rounded-md border border-emerald-500 bg-white text-[11px] font-bold text-emerald-600">
+              <div className="bg-[#F0F9FF] rounded-2xl p-4 flex items-center justify-between border border-[#E0EFFF]">
+                <span className="text-sm font-bold text-slate-900">Creation Fee</span>
+                <span className="px-3 py-1 rounded-lg border border-emerald-400 bg-white text-xs font-bold text-emerald-600">
                   $0.00 (TIER 2 FREE)
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs text-slate-600 pt-1">
+              <div className="flex items-center gap-1.5 text-xs text-slate-700 pt-1 font-medium">
                 <Zap size={14} className="text-emerald-500 fill-emerald-500" />
-                <span>Immediate issuance: <strong className="text-emerald-600">Instant Ready-to-use</strong></span>
+                <span>Immediate issuance: <strong className="text-emerald-600 font-bold">Instant Ready-to-use</strong></span>
               </div>
             </div>
 
@@ -549,7 +544,7 @@ export default function CreateCard() {
               <button
                 type="button"
                 onClick={() => setReviewModalOpen(false)}
-                className="w-full py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                className="w-full py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -558,7 +553,7 @@ export default function CreateCard() {
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleCreateCardSubmit}
-                className="w-full py-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs tracking-wide transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-[#162044] hover:bg-[#1E293B] text-white font-bold text-xs tracking-wide transition-colors cursor-pointer shadow-xs disabled:opacity-50"
               >
                 {isSubmitting ? 'Creating...' : 'Create Card'}
               </button>
@@ -567,7 +562,6 @@ export default function CreateCard() {
         </div>
       )}
 
-      {/* STEP 4 / MODAL: Card Created Successfully matching screenshot */}
       {createdModalOpen && createdCardData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
           <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 text-center relative">

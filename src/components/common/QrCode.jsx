@@ -15,7 +15,6 @@ export default function QrCode({
   const [dataUrl, setDataUrl] = useState('')
 
   useEffect(() => {
-    // Generate standard QR code via qrcode package
     if (QRCode && QRCode.toCanvas) {
       QRCode.toCanvas(
         canvasRef.current,
@@ -33,7 +32,6 @@ export default function QrCode({
           if (!err && canvasRef.current) {
             setDataUrl(canvasRef.current.toDataURL('image/png'))
           } else {
-            // Fallback to internal matrix generator
             try {
               const matrix = generateQrMatrix(value)
               setSvgMatrix(matrix)
@@ -66,7 +64,6 @@ export default function QrCode({
         style={{ width: size, height: size }}
       />
 
-      {/* SVG Fallback if canvas is not rendered yet */}
       {svgMatrix && !dataUrl && (
         <svg
           viewBox={`0 0 ${svgMatrix.length} ${svgMatrix.length}`}

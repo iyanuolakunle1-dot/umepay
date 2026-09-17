@@ -21,7 +21,6 @@ import ProfessionalReceiptModal from '../components/send/ProfessionalReceiptModa
 import { useApp } from '../context/AppContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 
-// ─── Nigerian banks list (for fiat external transfers) ───────────────────────
 const NIGERIAN_BANKS = [
   'Access Bank',
   'Citibank Nigeria',
@@ -51,7 +50,6 @@ const NIGERIAN_BANKS = [
   'Zenith Bank',
 ]
 
-// ─── Networks per crypto asset ────────────────────────────────────────────────
 const CRYPTO_NETWORKS = {
   BTC:  ['Bitcoin Mainnet', 'Bitcoin Testnet'],
   ETH:  ['Ethereum (ERC-20)', 'Polygon POS', 'Arbitrum One', 'Optimism'],
@@ -59,7 +57,6 @@ const CRYPTO_NETWORKS = {
   USDC: ['Ethereum (ERC-20)', 'Solana', 'Polygon POS', 'Arbitrum One'],
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtBal(account) {
   return `${account.symbol}${account.balance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
@@ -68,7 +65,6 @@ function fmtCrypto(asset) {
   return `${asset.balance} ${asset.code}`
 }
 
-// Build a unified wallet list for the source-wallet dropdown
 function buildWalletList(fiatAccounts, digitalAssets) {
   const fiats = fiatAccounts.map(a => ({
     id: a.id,
@@ -89,11 +85,6 @@ function buildWalletList(fiatAccounts, digitalAssets) {
   return [...fiats, ...crypto]
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-/**
- * Styled select that matches the screenshot's wallet/bank dropdown style
- */
 function StyledSelect({ value, onChange, children, className = '' }) {
   return (
     <div className={`relative ${className}`}>
@@ -112,9 +103,6 @@ function StyledSelect({ value, onChange, children, className = '' }) {
   )
 }
 
-/**
- * Labeled form field wrapper
- */
 function Field({ label, children }) {
   return (
     <div className="space-y-1.5">
@@ -124,9 +112,6 @@ function Field({ label, children }) {
   )
 }
 
-/**
- * Currency-tagged amount input (fiat)
- */
 function FiatAmountInput({ symbol, value, onChange, currency, usdRate, onMax }) {
   const usdEq = usdRate && value ? (parseFloat(value) / usdRate).toFixed(2) : null
   return (
@@ -156,9 +141,6 @@ function FiatAmountInput({ symbol, value, onChange, currency, usdRate, onMax }) 
   )
 }
 
-/**
- * Crypto amount input
- */
 function CryptoAmountInput({ value, onChange, code, usdPerUnit, onMax }) {
   const usdEq = usdPerUnit && value ? `~$${(parseFloat(value || 0) * usdPerUnit).toFixed(2)} USD` : null
   const networkFee = code === 'BTC' ? '0.00005' : code === 'ETH' ? '0.0005' : '0.50'
@@ -194,9 +176,6 @@ function CryptoAmountInput({ value, onChange, code, usdPerUnit, onMax }) {
   )
 }
 
-/**
- * Source Wallet Picker — pill badge + name + balance
- */
 function WalletPicker({ wallets, selectedId, onChange }) {
   const selected = wallets.find(w => w.id === selectedId) || wallets[0]
   return (
@@ -224,7 +203,6 @@ function WalletPicker({ wallets, selectedId, onChange }) {
   )
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function SendMoney() {
   const {
     user,
@@ -238,36 +216,29 @@ export default function SendMoney() {
   const toast    = useToast()
   const navigate = useNavigate()
 
-  // Primary tab
-  const [tab, setTab] = useState('external') // 'contact' | 'external'
+  const [tab, setTab] = useState('external')
 
-  // ── Send-to-Contact state ──────────────────────────────────────────────────
   const [searchContact, setSearchContact] = useState('')
   const [selectedContact, setSelectedContact] = useState(recentContacts[0])
   const [contactAmount, setContactAmount] = useState('')
   const [contactCurrency, setContactCurrency] = useState('NGN')
   const [contactRemark, setContactRemark] = useState('')
 
-  // ── Send-to-External state ─────────────────────────────────────────────────
-  const wallets      = useMemo(() => buildWalletList(fiatAccounts, digitalAssets), [fiatAccounts, digitalAssets])
   const [walletId, setWalletId] = useState(wallets[0]?.id ?? '')
   const activeWallet = wallets.find(w => w.id === walletId) || wallets[0]
   const isCrypto     = activeWallet?.isCrypto ?? false
 
-  // Fiat-external fields
   const [bankName,      setBankName]      = useState('Wema Bank')
   const [accountNumber, setAccountNumber] = useState('')
   const [accountName,   setAccountName]   = useState('')
   const [fiatAmount,    setFiatAmount]     = useState('')
   const [fiatRemark,    setFiatRemark]     = useState('')
 
-  // Crypto-external fields
   const [cryptoAddress, setCryptoAddress] = useState('')
   const [network,       setNetwork]       = useState('')
   const [cryptoAmount,  setCryptoAmount]  = useState('')
   const [cryptoRemark,  setCryptoRemark]  = useState('')
 
-  // When wallet changes, reset & set default network
   function handleWalletChange(id) {
     setWalletId(id)
     const w = wallets.find(x => x.id === id)
@@ -278,27 +249,23 @@ export default function SendMoney() {
     setFiatAmount(''); setCryptoAmount('')
   }
 
-  // ── Modals ─────────────────────────────────────────────────────────────────
   const [isQrOpen,      setIsQrOpen]      = useState(false)
   const [isReviewOpen,  setIsReviewOpen]  = useState(false)
   const [isPinOpen,     setIsPinOpen]     = useState(false)
   const [processing,    setProcessing]    = useState(false)
   const [receipt,       setReceipt]       = useState(null)
 
-  // ── Memos ──────────────────────────────────────────────────────────────────
   const filteredContacts = useMemo(() => {
     if (!searchContact) return myContacts
     const q = searchContact.toLowerCase()
     return myContacts.filter(c => `${c.name} ${c.phone}`.toLowerCase().includes(q))
   }, [myContacts, searchContact])
 
-  // Account name lookup simulation
   const resolvedName = useMemo(() => {
     if (accountNumber.length >= 10) return 'John Doe'
     return null
   }, [accountNumber])
 
-  // ── Derived transfer breakdown ─────────────────────────────────────────────
   const breakdown = useMemo(() => {
     if (tab === 'contact') {
       const acc   = fiatAccounts.find(a => a.code === contactCurrency) || fiatAccounts[0]
@@ -326,10 +293,9 @@ export default function SendMoney() {
       }
     }
 
-    // Fiat external (bank transfer)
     const acc = activeWallet.raw
     const amt = parseFloat(fiatAmount) || 0
-    const fee = 50 // flat bank fee in NGN (adjust per currency if needed)
+    const fee = 50
     return {
       transferAmount: `${acc.symbol}${amt.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
       fee:            `${acc.symbol}${fee.toLocaleString()}`,
@@ -339,7 +305,6 @@ export default function SendMoney() {
     }
   }, [tab, contactAmount, contactCurrency, fiatAmount, cryptoAmount, isCrypto, activeWallet, fiatAccounts])
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
   function handleContactSelect(c) {
     setSelectedContact(c)
   }
@@ -399,7 +364,6 @@ export default function SendMoney() {
     }, 900)
   }
 
-  // ── Computed values for PIN modal ──────────────────────────────────────────
   const pinTransferDetails = {
     amountFormatted: breakdown.total,
     recipientName:   tab === 'contact'
@@ -409,7 +373,6 @@ export default function SendMoney() {
         : accountName || resolvedName || 'Beneficiary',
   }
 
-  // ── Fiat usdRate for equivalent display ────────────────────────────────────
   const fiatUsdRate = useMemo(() => {
     if (!activeWallet?.isCrypto) {
       const acc = activeWallet?.raw
@@ -429,12 +392,10 @@ export default function SendMoney() {
 
   const networkOptions = isCrypto ? (CRYPTO_NETWORKS[activeWallet?.code] || []) : []
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <DashboardLayout title="Send">
       <h1 className="text-2xl font-black text-ink-900 tracking-tight mb-6">Send Money</h1>
 
-      {/* ── Tab bar ── */}
       <div className="flex border-b border-slate-200 mb-6 gap-6">
         {[
           { id: 'contact',  label: 'Send to Contact'  },
@@ -481,7 +442,6 @@ export default function SendMoney() {
                 </div>
               </div>
 
-              {/* Search contacts */}
               <div className="pt-2 border-t border-slate-100">
                 <div className="relative mb-2">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -519,7 +479,6 @@ export default function SendMoney() {
                 </div>
               </div>
 
-              {/* Selected recipient chip */}
               {selectedContact && (
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
                   <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
@@ -530,7 +489,6 @@ export default function SendMoney() {
                 </div>
               )}
 
-              {/* Amount */}
               <Field label="Transfer Amount">
                 <FiatAmountInput
                   symbol={fiatAccounts.find(a => a.code === contactCurrency)?.symbol || '$'}
@@ -545,7 +503,6 @@ export default function SendMoney() {
                 />
               </Field>
 
-              {/* Currency picker */}
               <Field label="Currency">
                 <StyledSelect value={contactCurrency} onChange={e => setContactCurrency(e.target.value)}>
                   {fiatAccounts.map(a => (
@@ -554,7 +511,6 @@ export default function SendMoney() {
                 </StyledSelect>
               </Field>
 
-              {/* Remark */}
               <Field label="Remark">
                 <input
                   type="text"
@@ -567,10 +523,8 @@ export default function SendMoney() {
             </>
           )}
 
-          {/* ── SEND TO EXTERNAL ── */}
           {tab === 'external' && (
             <>
-              {/* Source Wallet */}
               <Field label="Source Wallet">
                 <WalletPicker
                   wallets={wallets}
@@ -579,10 +533,8 @@ export default function SendMoney() {
                 />
               </Field>
 
-              {/* ── CRYPTO FLOW ── */}
               {isCrypto && (
                 <>
-                  {/* Recipient Wallet Address */}
                   <Field label="Recipient Wallet Address">
                     <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-white px-3 gap-2 focus-within:border-ink-700 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
                       <input
@@ -612,7 +564,6 @@ export default function SendMoney() {
                     </div>
                   </Field>
 
-                  {/* Transfer Network */}
                   <Field label="Transfer Network">
                     <StyledSelect
                       value={network}
@@ -624,7 +575,6 @@ export default function SendMoney() {
                     </StyledSelect>
                   </Field>
 
-                  {/* Transfer Amount */}
                   <Field label="Transfer Amount">
                     <CryptoAmountInput
                       value={cryptoAmount}
@@ -635,7 +585,6 @@ export default function SendMoney() {
                     />
                   </Field>
 
-                  {/* Remark */}
                   <Field label="Remark">
                     <input
                       type="text"
@@ -648,13 +597,10 @@ export default function SendMoney() {
                 </>
               )}
 
-              {/* ── FIAT BANK TRANSFER FLOW ── */}
               {!isCrypto && (
                 <>
-                  {/* Recipient Details heading */}
                   <p className="text-base font-bold text-ink-900 -mb-1">Recipient Details</p>
 
-                  {/* Bank Name */}
                   <Field label="Bank Name">
                     <StyledSelect value={bankName} onChange={e => { setBankName(e.target.value); setAccountName(''); setAccountNumber('') }}>
                       {NIGERIAN_BANKS.map(b => (
@@ -663,7 +609,6 @@ export default function SendMoney() {
                     </StyledSelect>
                   </Field>
 
-                  {/* Account Number */}
                   <Field label="Account Number">
                     <input
                       type="text"
@@ -682,7 +627,6 @@ export default function SendMoney() {
                     )}
                   </Field>
 
-                  {/* Transfer Amount */}
                   <Field label="Transfer Amount">
                     <FiatAmountInput
                       symbol={activeWallet.raw?.symbol || '₦'}

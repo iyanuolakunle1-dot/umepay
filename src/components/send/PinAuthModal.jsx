@@ -30,7 +30,6 @@ export default function PinAuthModal({
       setPin(updated)
 
       if (nextIndex === 3) {
-        // Full PIN entered!
         const fullCode = updated.join('')
         setTimeout(() => {
           onAuthorized(fullCode)

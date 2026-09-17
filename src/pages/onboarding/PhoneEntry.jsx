@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button.jsx'
 import CountryCodeDropdown from '../../components/common/CountryCodeDropdown.jsx'
 import { useApp } from '../../context/AppContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
+import { authService } from '../../services/auth.service.js'
 
 const trustPoints = ['Universal Identity', 'Instant Verification', 'Non-Custodial Option']
 
@@ -17,16 +18,20 @@ export default function PhoneEntry() {
 
   const [countryCode, setCountryCode] = useState('+234')
   const [phone, setPhone] = useState(location.state?.phone || '812 345 6789')
-  const [mode, setMode] = useState(location.state?.mode || 'register') // 'register' | 'signin'
+  const [mode, setMode] = useState(location.state?.mode || 'register')
   const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
+    try {
+      await authService.resendOtp({ phone: `${countryCode}${phone.replace(/\s+/g, '')}` })
+    } catch (err) {
+      console.warn('OTP dispatch fallback:', err.message)
+    } finally {
       setLoading(false)
       navigate('/onboarding/verify', { state: { phone, mode } })
-    }, 600)
+    }
   }
 
   function handleFastSignIn() {

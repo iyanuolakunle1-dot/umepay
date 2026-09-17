@@ -9,7 +9,7 @@ export default function CardTransactions() {
   const { cards, cardTransactions } = useApp()
 
   const card = cards.find((c) => c.id === id) || cards[0]
-  const [filterType, setFilterType] = useState('All') // All, Purchase, Refund, Decline
+  const [filterType, setFilterType] = useState('All')
   const [page, setPage] = useState(1)
 
   if (!card) {
@@ -80,7 +80,6 @@ export default function CardTransactions() {
           </div>
         </div>
 
-        {/* Filter Controls Bar matching screenshot */}
         <div className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
             {['All', 'Purchase', 'Refund', 'Decline'].map((t) => (
@@ -105,7 +104,6 @@ export default function CardTransactions() {
           </div>
         </div>
 
-        {/* Transactions Table matching screenshot */}
         <div className="bg-white rounded-3xl border border-slate-100 shadow-xs overflow-hidden">
           {filteredList.length === 0 ? (
             <div className="p-12 text-center text-slate-400 text-xs">
@@ -187,7 +185,6 @@ export default function CardTransactions() {
             </div>
           )}
 
-          {/* Table Pagination footer matching screenshot */}
           {filteredList.length > 0 && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 px-6 border-t border-slate-100 text-xs text-slate-400">
               <span>Showing 1-{filteredList.length} of {filteredList.length} transactions</span>

@@ -95,7 +95,6 @@ export default function CardDetails() {
   return (
     <DashboardLayout title="Card Details">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Breadcrumb Navigation matching screenshot */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
             <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
@@ -135,9 +134,7 @@ export default function CardDetails() {
           </div>
         </div>
 
-        {/* Main Grid matching screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Card Graphic & Card Information */}
           <div className="lg:col-span-6 space-y-6">
             <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs flex flex-col items-center">
               <div className="w-full flex justify-center mb-6">
@@ -177,7 +174,6 @@ export default function CardDetails() {
               </div>
             </div>
 
-            {/* Card Information Table matching screenshot */}
             <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
               <h3 className="font-bold text-slate-900 text-sm">Card Information</h3>
 
@@ -230,9 +226,7 @@ export default function CardDetails() {
             </div>
           </div>
 
-          {/* Right Column: Quick Stats & Actions */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Quick Stats Box matching screenshot */}
             <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-7 shadow-xs space-y-6">
               <h3 className="font-bold text-slate-900 text-sm">Quick Stats</h3>
 
@@ -281,7 +275,6 @@ export default function CardDetails() {
               </div>
             </div>
 
-            {/* Action Buttons matching screenshot */}
             <div className="flex flex-wrap items-center gap-4">
               <button
                 type="button"

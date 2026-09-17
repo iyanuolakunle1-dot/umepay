@@ -27,7 +27,6 @@ export default function Cards() {
   return (
     <DashboardLayout title="Virtual Cards">
       {cards.length === 0 ? (
-        // Empty state matching screenshot
         <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-lg mx-auto text-center px-4">
           <div className="w-full bg-white rounded-3xl border border-slate-100 p-8 sm:p-12 shadow-sm flex flex-col items-center">
             <div className="w-20 h-20 rounded-full bg-indigo-50/80 text-indigo-900 flex items-center justify-center mb-6">
@@ -80,7 +79,6 @@ export default function Cards() {
             </div>
           )}
 
-          {/* Top Summary Bar matching screenshot */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:px-6 sm:py-3.5 rounded-2xl border border-slate-100 shadow-xs">
             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500">
               <div className="flex items-center gap-1.5">

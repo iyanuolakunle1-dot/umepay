@@ -14,9 +14,8 @@ import { useToast } from '../../context/ToastContext.jsx'
 
 export default function ContactSupportModal({ open, onClose }) {
   const toast = useToast()
-  const [tab, setTab] = useState('chat') // 'chat' | 'ticket' | 'info'
+  const [tab, setTab] = useState('chat')
 
-  // Live chat state
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -30,7 +29,6 @@ export default function ContactSupportModal({ open, onClose }) {
   const [isTyping, setIsTyping] = useState(false)
   const chatBottomRef = useRef(null)
 
-  // Ticket state
   const [ticketSubject, setTicketSubject] = useState('')
   const [ticketCategory, setTicketCategory] = useState('Account & KYC')
   const [ticketMessage, setTicketMessage] = useState('')
@@ -60,7 +58,6 @@ export default function ContactSupportModal({ open, onClose }) {
     setInputMessage('')
     setIsTyping(true)
 
-    // Generate intelligent instant support response
     setTimeout(() => {
       let replyText =
         'Thank you for reaching out! Our verification desk has noted your request and your account limits are monitored 24/7.'
