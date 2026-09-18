@@ -1,145 +1,94 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ArrowRight, CheckCircle2, Lock, ShieldCheck, Sparkles, UserCheck } from 'lucide-react'
-import OnboardingShell, { StepBadge } from '../../components/common/OnboardingShell.jsx'
-import Button from '../../components/ui/Button.jsx'
+import { ShieldCheck } from 'lucide-react'
 import CountryCodeDropdown from '../../components/common/CountryCodeDropdown.jsx'
-import { useApp } from '../../context/AppContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 import { authService } from '../../services/auth.service.js'
-
-const trustPoints = ['Universal Identity', 'Instant Verification', 'Non-Custodial Option']
 
 export default function PhoneEntry() {
   const navigate = useNavigate()
   const location = useLocation()
   const toast = useToast()
-  const { user } = useApp()
 
   const [countryCode, setCountryCode] = useState('+234')
-  const [phone, setPhone] = useState(location.state?.phone || '812 345 6789')
-  const [mode, setMode] = useState(location.state?.mode || 'register')
+  const [phone, setPhone] = useState(location.state?.phone || '')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const cleaned = phone.replace(/\s+/g, '')
+    if (cleaned.length < 7) {
+      toast.error('Invalid number', 'Please enter a valid phone number.')
+      return
+    }
     setLoading(true)
     try {
-      await authService.resendOtp({ phone: `${countryCode}${phone.replace(/\s+/g, '')}` })
+      await authService.resendOtp({ phone: `${countryCode}${cleaned}` })
     } catch (err) {
       console.warn('OTP dispatch fallback:', err.message)
     } finally {
       setLoading(false)
-      navigate('/onboarding/verify', { state: { phone, mode } })
+      navigate('/onboarding/verify', { state: { phone, countryCode } })
     }
   }
 
-  function handleFastSignIn() {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      toast.success('Welcome back!', `Signed into ${user.name}'s verified account.`)
-      navigate('/dashboard')
-    }, 400)
-  }
-
   return (
-    <OnboardingShell
-      footer={
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-500">
-          {trustPoints.map((t) => (
-            <span key={t} className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-emerald-500" /> {t}
-            </span>
-          ))}
-        </div>
-      }
-    >
-      <div className="flex items-center justify-between mb-5">
-        <span className="font-extrabold text-lg text-ink-900">Umepay</span>
-        <StepBadge>{mode === 'signin' ? 'Sign In' : 'Step 1 of 2'}</StepBadge>
-      </div>
-
-      {/* Mode Switch Tabs */}
-      <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-6 text-xs font-bold">
-        <button
-          type="button"
-          onClick={() => setMode('register')}
-          className={`py-2 rounded-lg transition-all ${
-            mode === 'register'
-              ? 'bg-white text-ink-900 shadow-xs'
-              : 'text-slate-500 hover:text-ink-800'
-          }`}
-        >
-          Create Account
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('signin')}
-          className={`py-2 rounded-lg transition-all ${
-            mode === 'signin'
-              ? 'bg-white text-ink-900 shadow-xs'
-              : 'text-slate-500 hover:text-ink-800'
-          }`}
-        >
-          Sign In
-        </button>
-      </div>
-
-      <h1 className="text-2xl font-extrabold text-ink-900 tracking-tight">
-        {mode === 'signin' ? 'Welcome back' : 'Enter your phone number'}
-      </h1>
-      <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-        {mode === 'signin'
-          ? 'Enter your registered phone number to receive a secure sign-in OTP.'
-          : 'Your phone number is your financial identity. Connecting you to multi-currency cash networks instantly.'}
+    <div className="min-h-screen bg-white flex flex-col px-6 pt-14 pb-8">
+      <p className="text-center text-sm font-semibold text-slate-900 mb-10">
+        Getting Started
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6">
-        <div className="flex items-center h-12 rounded-xl border border-slate-200 px-3 gap-2.5 focus-within:border-ink-800 focus-within:ring-2 focus-within:ring-ink-100 transition-colors">
+      <span className="inline-block self-start px-3 py-1 rounded-full text-xs font-bold tracking-wide text-amber-700 bg-amber-50 border border-amber-200 mb-4 uppercase">
+        Universal ID
+      </span>
+
+      <h1 className="text-3xl font-extrabold text-slate-900 leading-tight mb-3">
+        Enter your phone<br />number
+      </h1>
+
+      <p className="text-sm text-slate-500 leading-relaxed mb-8">
+        Your phone number is your universal financial identity.
+        Linking cash, cards, and stablecoins.
+      </p>
+
+      <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+          Phone Number
+        </label>
+
+        <div className="flex items-center h-14 rounded-2xl border border-slate-200 px-4 gap-3 focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-100 transition-colors bg-white">
           <CountryCodeDropdown
             value={countryCode}
             onChange={(val) => setCountryCode(val)}
           />
-          <span className="h-5 w-px bg-slate-200" />
+          <span className="h-6 w-px bg-slate-200" />
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             inputMode="numeric"
             placeholder="812 345 6789"
-            className="flex-1 min-w-0 outline-none text-[15px] placeholder:text-slate-400 font-medium"
+            className="flex-1 min-w-0 outline-none text-[15px] placeholder:text-slate-400 font-medium text-slate-900"
             required
           />
         </div>
 
-        <Button
-          type="submit"
-          fullWidth
-          size="lg"
-          className="mt-5"
-          loading={loading}
-          icon={ArrowRight}
-          iconPosition="right"
-        >
-          {mode === 'signin' ? 'Send Sign-In Code' : 'Continue to Verification'}
-        </Button>
+        <div className="flex items-center gap-2 mt-4">
+          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+          <span className="text-xs text-slate-500">
+            Secured via state-level identity verification
+          </span>
+        </div>
+
+        <div className="mt-auto pt-10">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 rounded-2xl bg-[#162044] hover:bg-[#1E293B] text-white font-bold text-sm tracking-wide transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Sending...' : 'Continue'}
+          </button>
+        </div>
       </form>
-
-      {/* Fast Sign In Access */}
-      <div className="mt-6 pt-5 border-t border-slate-100">
-        <button
-          type="button"
-          onClick={handleFastSignIn}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors"
-        >
-          <Sparkles size={14} className="text-amber-400" />
-          <span>⚡ Fast Sign In ({user.name})</span>
-        </button>
-      </div>
-
-      <p className="mt-4 text-xs text-center text-slate-400 leading-relaxed">
-        By continuing, you agree to receive an SMS OTP for secure verification.
-      </p>
-    </OnboardingShell>
+    </div>
   )
 }
