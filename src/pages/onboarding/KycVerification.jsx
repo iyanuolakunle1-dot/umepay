@@ -246,8 +246,7 @@ export default function KycVerification() {
   }, [cameraStream])
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-8 sm:py-14 px-4 flex items-center justify-center">
-      {/* Hidden File Inputs */}
+    <div className="min-h-screen bg-white sm:bg-[#F4F7FB] py-8 sm:py-14 px-4 sm:flex sm:items-center sm:justify-center">
       <input
         ref={frontInputRef}
         type="file"
@@ -270,8 +269,7 @@ export default function KycVerification() {
         className="hidden"
       />
 
-      <div className="w-full max-w-[800px] bg-white rounded-2xl sm:rounded-[32px] shadow-sm border border-slate-200/80 p-5 sm:p-12 animate-fade-in">
-        {/* Navigation & Step Pill */}
+      <div className="w-full max-w-[800px] sm:bg-white sm:rounded-[32px] sm:shadow-xl sm:border sm:border-slate-100 p-0 sm:p-12">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <button
             onClick={handleBack}
@@ -285,9 +283,7 @@ export default function KycVerification() {
           </span>
         </div>
 
-        {/* 3-Step Stepper Progress Header */}
         <div className="flex items-center justify-between mb-8 sm:mb-10 gap-1.5 sm:gap-3">
-          {/* Step 1 */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep > 1 ? (
               <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
@@ -308,10 +304,7 @@ export default function KycVerification() {
             </div>
           </div>
 
-          {/* Line 1 */}
           <div className={`h-[2px] flex-1 min-w-[12px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 1 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
-
-          {/* Step 2 */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep > 2 ? (
               <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-emerald-50 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0">
@@ -336,10 +329,8 @@ export default function KycVerification() {
             </div>
           </div>
 
-          {/* Line 2 */}
           <div className={`h-[2px] flex-1 min-w-[12px] sm:min-w-[40px] rounded-full transition-colors ${currentStep > 2 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
 
-          {/* Step 3 */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {currentStep === 3 ? (
               <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#18224b] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
@@ -361,7 +352,7 @@ export default function KycVerification() {
           </div>
         </div>
 
-        {/* STEP 1: Personal Information Form */}
+
         {currentStep === 1 && (
           <div className="animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
@@ -518,7 +509,7 @@ export default function KycVerification() {
           </div>
         )}
 
-        {/* STEP 2: Document Upload */}
+
         {currentStep === 2 && (
           <div className="animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
@@ -563,9 +554,7 @@ export default function KycVerification() {
                 </div>
               </div>
 
-              {/* Upload Dropzones */}
               <div className="grid sm:grid-cols-2 gap-5 pt-2">
-                {/* Front of Document */}
                 <div
                   className={`rounded-2xl border-2 border-dashed transition-all p-6 sm:p-8 flex flex-col items-center justify-center text-center min-h-[200px] ${
                     frontDoc
@@ -618,7 +607,6 @@ export default function KycVerification() {
                   )}
                 </div>
 
-                {/* Back of Document */}
                 <div
                   className={`rounded-2xl border-2 border-dashed transition-all p-6 sm:p-8 flex flex-col items-center justify-center text-center min-h-[200px] ${
                     backDoc
@@ -691,7 +679,7 @@ export default function KycVerification() {
           </div>
         )}
 
-        {/* STEP 3: Selfie Verification */}
+
         {currentStep === 3 && (
           <div className="animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
@@ -701,7 +689,6 @@ export default function KycVerification() {
               Take a live photo to confirm your identity matches your documents.
             </p>
 
-            {/* Circular Camera Framing Area */}
             <div className="my-8 flex justify-center">
               <div className="h-56 w-56 sm:h-64 sm:w-64 rounded-full border-2 border-dashed border-slate-400 bg-slate-50/70 flex flex-col items-center justify-center p-4 text-center overflow-hidden relative shadow-inner">
                 {selfiePhoto ? (
@@ -732,7 +719,6 @@ export default function KycVerification() {
               </div>
             </div>
 
-            {/* Verification Checklist */}
             <div className="max-w-md mx-auto space-y-2 text-xs sm:text-sm text-slate-600 mb-8 pl-6 sm:pl-10">
               <p className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
@@ -748,7 +734,6 @@ export default function KycVerification() {
               </p>
             </div>
 
-            {/* Actions */}
             <div className="space-y-3">
               {selfiePhoto ? (
                 <button
@@ -783,7 +768,7 @@ export default function KycVerification() {
         )}
       </div>
 
-      {/* Live Camera Viewfinder Modal */}
+
       <Modal open={isCameraModalOpen} onClose={closeCamera} size="md">
         <ModalHeader title="Take Live Selfie" onClose={closeCamera} />
         <div className="p-6">
@@ -824,7 +809,7 @@ export default function KycVerification() {
                         facingMode === 'user' ? '-scale-x-100' : ''
                       }`}
                     />
-                    {/* Framing oval guide */}
+
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                       <div className="h-64 w-52 sm:h-72 sm:w-60 rounded-full border-2 border-white/70 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]" />
                     </div>

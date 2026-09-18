@@ -15,8 +15,8 @@ export default function IdentityVerified() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-[420px] bg-white rounded-3xl shadow-xl p-10 text-center">
+    <div className="min-h-screen bg-white sm:bg-[#F4F7FB] flex flex-col items-center justify-center px-6 py-10 sm:px-4">
+      <div className="w-full max-w-[420px] sm:bg-white sm:rounded-3xl sm:shadow-xl sm:border sm:border-slate-100 sm:p-10 text-center">
         <div className="h-16 w-16 rounded-full bg-emerald-50 grid place-items-center mx-auto mb-6">
           <Check size={30} className="text-emerald-500" strokeWidth={3} />
         </div>

@@ -38,14 +38,11 @@ export default function LoginPage() {
       const identifier = loginMethod === 'phone' ? `${countryCode}${phone.replace(/\s+/g, '')}` : email
       const res = await authService.login({ identifier, pin, method: loginMethod })
       if (res?.user) updateUser(res.user)
-      toast.success('Welcome back!', `Signed in as ${res?.user?.name || user.name}.`)
-      navigate('/dashboard')
     } catch (err) {
       console.warn('Backend login fallback:', err.message)
-      toast.success('Welcome back!', `Signed in as ${user.name}.`)
-      navigate('/dashboard')
     } finally {
       setLoading(false)
+      navigate('/onboarding/verify', { state: { phone, countryCode, mode: 'signin' } })
     }
   }
 
@@ -53,8 +50,7 @@ export default function LoginPage() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      toast.success('Welcome back!', `Signed in as ${user.name} (Verified Account).`)
-      navigate('/dashboard')
+      navigate('/onboarding/verify', { state: { phone, countryCode, mode: 'signin' } })
     }, 400)
   }
 
